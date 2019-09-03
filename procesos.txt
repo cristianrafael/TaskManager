@@ -1,26 +1,12 @@
-System                           4        2        20 KB
-Registry                       120        13    27,172 KB
-smss.exe                       448        10       132 KB
-csrss.exe                      736        19     1,480 KB
-wininit.exe                    836         3       336 KB
-services.exe                   908        30     6,720 KB
-lsass.exe                      928         5    14,164 KB
-svchost.exe                    356        20       396 KB
-svchost.exe                    512        20    25,792 KB
-fontdrvhost.exe                656        22        72 KB
-WUDFHost.exe                   648        18     4,756 KB
-svchost.exe                   1120        16    13,700 KB
-svchost.exe                   2008        12     6,980 KB
-svchost.exe                   2060        15     4,176 KB
-svchost.exe                   2080         5     5,528 KB
-igfxCUIService.exe            2168         3     2,164 KB
-svchost.exe                   3044        13     2,876 KB
-wlanext.exe                   2904        18     5,012 KB
-conhost.exe                   3104         6       448 KB
-spoolsv.exe                   3112        11     3,920 KB
-svchost.exe                   3192         6    13,664 KB
-svchost.exe                   3240        20     2,268 KB
-svchost.exe                   3360        14     3,052 KB
-svchost.exe                   3368         9     2,528 KB
-svchost.exe                   3408        11     3,460 KB
-DbxSvc.exe                    3560         7       464 KB
+System                           4         2 4 5 10
+Registry                       120        13 1 7 22
+smss.exe                       448        10 1 3 12 
+csrss.exe                      736        19 1 4 80
+wininit.exe                    836         3 33 6 9
+services.exe                   908        30 67 2 0
+lsass.exe                      928         5 14 1 4
+svchost.exe                    356        20 39 6 3
+svchost.exe                    512        20 25 7 10
+fontdrvhost.exe                656        22 72 4 10
+WUDFHost.exe                   648        18 47 5 61
+svchost.exe                   1120        16 13 1 20

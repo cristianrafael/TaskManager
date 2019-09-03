@@ -17,13 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartFrame;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-
 /**
  *
  * @author Cristian
@@ -34,7 +27,7 @@ public class Administrador extends Thread{
     DefaultTableModel tablaModelo; //El modelo de la tabla (se usa para insertar datos)
     List<Proceso> procesos; //Arreglo de los procesos(hilos) que se van creando
     Random rand; //Variable que sirve para generar numeros aleatorios
-    int proceso_actual;
+    int proceso_siguiente;
     boolean terminado;
     //Variables para archivos
     File archivo; //Archivo para cargar los proceso
@@ -42,10 +35,11 @@ public class Administrador extends Thread{
     BufferedReader buffer; //buffer
     String linea,token; //La linea sirve para leer linea por linea el archivo, el token concatena los caracteres leidos para obtener una cadena
     int num_token; //El numero de token elige la posicion del arreglo para saber que token es.
-    String[] fila = {"","","","",""};
+    String[] fila = {"","","","","","",""};
     
-    XYSeries series;
-    XYSeriesCollection dataset;
+    Grafica grafica;
+    
+    int mem,pro,dis;
     public Administrador(javax.swing.JTable tabla)
     {
         super("Main"); //Inicializamos el hilo con el nombre que este llevará
@@ -54,6 +48,8 @@ public class Administrador extends Thread{
         
         procesos = new ArrayList(); //Inicializamos el arreglo de procesos.
         
+        grafica = new Grafica(procesos);
+        
         tablaModelo = new DefaultTableModel(); //Aqui inicializamos el modelo de la tabla, seguido del nombre de sus columnas
         tablaModelo.addColumn("Nombre");
         tablaModelo.addColumn("PID");
@@ -61,66 +57,57 @@ public class Administrador extends Thread{
         tablaModelo.addColumn("Tiempo transcurrido");
         tablaModelo.addColumn("Tiempo restante");
         tablaModelo.addColumn("Memoria");
+        tablaModelo.addColumn("Procesador");
+        tablaModelo.addColumn("Disco");
         
         rand = new Random(); //Se inicializa la variable random
         tabla.setModel(tablaModelo); //Le asignamos a la tabla, el modelo que acabamos de inicializar.
         
         cargarArchivo();//Cargamos el archivo
         
-        proceso_actual = 0;
+        proceso_siguiente = 0;
         terminado = false;
         
-        series = new XYSeries("Rendimiento");
-        dataset = new XYSeriesCollection();
+        mem = pro = dis = 0;
         
-        series.add(1, 1);
-        series.add(2, 6);
-        series.add(3, 3);
-        series.add(4, 10);
-        
-        dataset.addSeries(series);
-        
-        JFreeChart chart = ChartFactory.createXYLineChart(
-                "Ventas 2014", // Título
-                "Tiempo (x)", // Etiqueta Coordenada X
-                "Cantidad", // Etiqueta Coordenada Y
-                dataset, // Datos
-                PlotOrientation.VERTICAL,
-                true, // Muestra la leyenda de los productos (Rendimiento)
-                false,
-                false
-        );
-        ChartFrame frame = new ChartFrame("Ejemplo Grafica Lineal", chart);
-        frame.pack();
-        frame.setVisible(true);
     }
     @Override
-    public void run(){
-        procesos.get(proceso_actual).start();
+    public void run(){        
+        grafica.start();
         do{
-            if(procesos.get(proceso_actual).terminado() == true)
+            calcularRecursos();
+            for(int i= proceso_siguiente; i<procesos.size(); i++)
             {
-                System.out.println(procesos.get(proceso_actual).terminado());
+                if((procesos.get(i).getMemoria() + mem  <= 100) && (procesos.get(i).getProcesador() + pro <=100) && (procesos.get(i).getDisco() + dis <= 100))
+                    procesos.get(i).start();
+            }
+            
+            
+            /*if(procesos.get(proceso_actual).getEstado().equals("Terminado"))
+            {
+                System.out.println(procesos.get(proceso_actual).getEstado().equals("Terminado"));
                 if(proceso_actual < procesos.size())
                 {
                     proceso_actual++;
                     procesos.get(proceso_actual).start();
                     
              
-                    int numero = rand.nextInt(10) + 1;
-                    int numero2 = rand.nextInt(15)+ 2;
-                    int numero3 = rand.nextInt(10) +3;
-                    String[] row = {"Usuario",""+numero2+"","En espera...", "0 seg",""+numero+" seg", ""+numero3+"KB"};
+                    int PID = rand.nextInt(10) + 1;
+                    int tiempo = rand.nextInt(15)+ 2;
+                    int memoria = rand.nextInt(10) +3;
+                    int procesador = rand.nextInt(20) +1;
+                    int disco = rand.nextInt(20) +2;
+                    
+                    String[] row = {"Usuario",""+PID+"","En espera...", "0 seg",""+tiempo+" seg", ""+memoria+"",""+procesador+"",""+disco+""};
                     tablaModelo.addRow(row);
-                    Proceso task = new Proceso("Usuario",tabla,tabla.getRowCount()-1, numero2);
+                    Proceso task = new Proceso("Usuario",tabla,tabla.getRowCount()-1, tiempo,memoria,procesador,disco);
                     procesos.add(task);
                 }
                 else
                     terminado = true;
-            }
-            series.add(rand.nextInt(10), rand.nextInt(10));
+            }*/
             
-            System.out.println(procesos.get(proceso_actual).terminado());
+            System.out.println("Hilo ejecutandose");
         }while(!terminado);
     }
     private void cargarArchivo(){
@@ -152,10 +139,10 @@ public class Administrador extends Thread{
                     }
                     fila[num_token] = token;//Agregamos el ultimo token ( Como no hay espacio tiene que ser el ultimo)
                                 
-                    System.out.println(" " + fila[0] + " " + fila[1] + " " + fila[2] + " " + fila[3] + " " + fila[4]);
-                    String[] row = {fila[0], fila[1], "En espera...", "0 seg", ""+fila[2]+" seg", ""+fila[3]+" "+fila[4]};
+                    System.out.println(" " + fila[0] + " " + fila[1] + " " + fila[2] + " " + fila[3] + " " + fila[4] + " " + fila[5]);
+                    String[] row = {fila[0], fila[1], "En espera...", "0 seg", ""+fila[2]+" seg", ""+fila[3]+"", ""+fila[4]+"",""+fila[5]+""};
                     tablaModelo.addRow(row);
-                    Proceso task = new Proceso(fila[0],tabla,tabla.getRowCount()-1, Integer.parseInt(fila[2]));
+                    Proceso task = new Proceso(fila[0],tabla,tabla.getRowCount()-1, Integer.parseInt(fila[2]),Integer.parseInt(fila[3]),Integer.parseInt(fila[4]),Integer.parseInt(fila[5]));
                     procesos.add(task);
                     //task.start();
                     linea = buffer.readLine();
@@ -165,6 +152,18 @@ public class Administrador extends Thread{
             } catch (IOException ex) {
                 Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
             }
+    }
+    private void calcularRecursos(){
+        mem = pro = dis = 0;
+        for(int i=0; i<procesos.size(); i++)
+        {
+            if(procesos.get(i).getEstado().equals("Ejecutandose") || procesos.get(i).getEstado().equals("Pausado"))
+            {
+                mem += procesos.get(i).getMemoria();
+                pro += procesos.get(i).getProcesador();
+                dis += procesos.get(i).getDisco();
+            }
+        }  
     }
     public void pausarReanudarProceso(){
         int row = tabla.getSelectedRow();

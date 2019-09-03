@@ -14,21 +14,28 @@ public class Proceso extends Thread{
     
     private javax.swing.JTable tabla;
     private int fila,tiempo,transcurrido,restante;
-    private boolean pausado, detenido;
+    //private boolean pausado, detenido;
+    private String estado = "En espera"; //0 ['En espera','Ejecutandose','Pausado',Terminado']
+    private int memoria,procesador,disco;
     
-    public Proceso(String nombre_proceso, javax.swing.JTable tabla, int fila,int tiempo){
+    public Proceso(String nombre_proceso, javax.swing.JTable tabla, int fila, int tiempo, int memoria,int procesador, int disco){
        super(nombre_proceso);
        this.tabla = tabla;
        this.fila = fila;
        this.tiempo = this.restante = tiempo;
        this.transcurrido = 0;
-       this.pausado = this.detenido = false;
+       //this.pausado = this.detenido = false;
+       
+       this.memoria = memoria;
+       this.procesador = procesador;
+       this.disco = disco;
     }
     @Override
     public void run() {
-        
-        if(restante>0){
-            tabla.setValueAt("Ejecutandose",fila,2);
+        estado = "Ejecutandose";
+        if(restante>0)
+        {
+            tabla.setValueAt(estado,fila,2);
         }
         
         while(restante>0)
@@ -37,9 +44,9 @@ public class Proceso extends Thread{
                 sleep(1000);
                 synchronized (this)
                 {
-                    while(pausado)
+                    while(estado.equals("Pausado"))
                         wait();
-                    if(detenido)
+                    if(estado.equals("Terminado"))
                         break;
                 }
             } catch (InterruptedException ex) {
@@ -51,36 +58,40 @@ public class Proceso extends Thread{
             tabla.setValueAt("" + transcurrido +" seg",fila,3);
             tabla.setValueAt("" + restante + " seg",fila,4);
         }
-        tabla.setValueAt("Terminado",fila,2);
-        detenido = true;
+        estado = "Terminado";
+        tabla.setValueAt(estado,fila,2);
     }
-    public boolean terminado(){
-        return detenido;
+    public String getEstado(){
+        return estado;
     }
+    public int getMemoria(){
+        return memoria;
+    }
+    public int getProcesador(){
+        return procesador;
+    }
+    public int getDisco(){
+        return disco;
+    }
+    
     synchronized void pausar_reanudar(){
-        if(!detenido)
+        if(!estado.equals("Terminado")) //Si el proceso no esta detenido
         {
-            if(pausado)
-            {
-                pausado = false; 
-                tabla.setValueAt("Ejecutandose",fila,2);
-            }
+            if(estado.equals("Pausado"))
+                estado = "Ejecutandose";
             else
-            {
-                pausado = true;
-                tabla.setValueAt("Pausado",fila,2);
-            }
+                estado = "Pausado";
+            tabla.setValueAt(estado,fila,2);
             notify();
         }
     }
     synchronized void detener(){
-        if(!detenido)
+        if(!estado.equals("Terminado"))
         {
-            pausado = false;
-            detenido = true;
+            estado = "Terminado";
             
             if(restante>0)
-                tabla.setValueAt("Terminado",fila,2);
+                tabla.setValueAt(estado,fila,2);
             
             restante = 0;
             notify();
