@@ -24,6 +24,10 @@ import javax.swing.table.DefaultTableModel;
 public class Administrador extends Thread{
     
     javax.swing.JTable tabla; //La tabla donde se van a mostrar los estados de los procesos (La misma que se crea en Main.java)
+    javax.swing.JLabel memo,proc,disc;
+    java.awt.Panel panel;
+    javax.swing.JProgressBar bar_mem,bar_pro,bar_dis;
+    
     DefaultTableModel tablaModelo; //El modelo de la tabla (se usa para insertar datos)
     List<Proceso> procesos; //Arreglo de los procesos(hilos) que se van creando
     Random rand; //Variable que sirve para generar numeros aleatorios
@@ -40,15 +44,22 @@ public class Administrador extends Thread{
     Grafica grafica;
     
     int mem,pro,dis;
-    public Administrador(javax.swing.JTable tabla)
+    public Administrador(javax.swing.JTable tabla, java.awt.Panel panel,javax.swing.JLabel memo, javax.swing.JLabel proc, javax.swing.JLabel disc,javax.swing.JProgressBar bar_mem, javax.swing.JProgressBar bar_pro,javax.swing.JProgressBar bar_dis)
     {
         super("Main"); //Inicializamos el hilo con el nombre que este llevará
                 
         this.tabla = tabla; //Seteamos la tabla que viene del main.java
+        this.panel = panel;
+        this.memo = memo;
+        this.proc = proc;
+        this.disc = disc;
+        this.bar_mem = bar_mem;
+        this.bar_pro = bar_pro;
+        this.bar_dis = bar_dis;
         
         procesos = new ArrayList(); //Inicializamos el arreglo de procesos.
         
-        grafica = new Grafica(procesos);
+        grafica = new Grafica(procesos,panel);
         
         tablaModelo = new DefaultTableModel(); //Aqui inicializamos el modelo de la tabla, seguido del nombre de sus columnas
         tablaModelo.addColumn("Nombre");
@@ -75,13 +86,28 @@ public class Administrador extends Thread{
     public void run(){        
         grafica.start();
         do{
-            calcularRecursos();
-            for(int i= proceso_siguiente; i<procesos.size(); i++)
+            mem = grafica.getMemoria(); memo.setText(""+mem+"%");bar_mem.setValue(mem);
+            pro = grafica.getProcesador(); proc.setText(""+pro+"%");bar_pro.setValue(pro);
+            dis = grafica.getDisco(); disc.setText(""+dis+"%");bar_dis.setValue(dis);
+            
+            if( procesos.get(proceso_siguiente).getEstado().equals("En espera"))
             {
-                if((procesos.get(i).getMemoria() + mem  <= 100) && (procesos.get(i).getProcesador() + pro <=100) && (procesos.get(i).getDisco() + dis <= 100))
-                    procesos.get(i).start();
+                if(procesos.get(proceso_siguiente).getMemoria() + mem  <= 100)
+                    if(procesos.get(proceso_siguiente).getProcesador() + pro <=100)
+                        if(procesos.get(proceso_siguiente).getDisco() + dis <= 100)
+                        {
+                            procesos.get(proceso_siguiente).start();
+                            if(proceso_siguiente < procesos.size()-1)
+                                proceso_siguiente++;
+                        }
+            }
+            else if ( procesos.get(proceso_siguiente).getEstado().equals("Terminado"))
+            {
+                if(proceso_siguiente < procesos.size()-1)
+                    proceso_siguiente++;
             }
             
+            System.out.println("Memoria: "+grafica.getMemoria()+ ", pro: "+grafica.getProcesador()+", dis: "+grafica.getDisco());
             
             /*if(procesos.get(proceso_actual).getEstado().equals("Terminado"))
             {
@@ -106,8 +132,12 @@ public class Administrador extends Thread{
                 else
                     terminado = true;
             }*/
-            
-            System.out.println("Hilo ejecutandose");
+            System.out.println("Hijo ejecutandose");
+            try {
+                sleep(1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }while(!terminado);
     }
     private void cargarArchivo(){
@@ -140,7 +170,7 @@ public class Administrador extends Thread{
                     fila[num_token] = token;//Agregamos el ultimo token ( Como no hay espacio tiene que ser el ultimo)
                                 
                     System.out.println(" " + fila[0] + " " + fila[1] + " " + fila[2] + " " + fila[3] + " " + fila[4] + " " + fila[5]);
-                    String[] row = {fila[0], fila[1], "En espera...", "0 seg", ""+fila[2]+" seg", ""+fila[3]+"", ""+fila[4]+"",""+fila[5]+""};
+                    String[] row = {fila[0], fila[1], "En espera...", "0 seg", ""+fila[2]+" seg", ""+fila[3]+"%", ""+fila[4]+"%",""+fila[5]+"%"};
                     tablaModelo.addRow(row);
                     Proceso task = new Proceso(fila[0],tabla,tabla.getRowCount()-1, Integer.parseInt(fila[2]),Integer.parseInt(fila[3]),Integer.parseInt(fila[4]),Integer.parseInt(fila[5]));
                     procesos.add(task);
@@ -152,18 +182,6 @@ public class Administrador extends Thread{
             } catch (IOException ex) {
                 Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
             }
-    }
-    private void calcularRecursos(){
-        mem = pro = dis = 0;
-        for(int i=0; i<procesos.size(); i++)
-        {
-            if(procesos.get(i).getEstado().equals("Ejecutandose") || procesos.get(i).getEstado().equals("Pausado"))
-            {
-                mem += procesos.get(i).getMemoria();
-                pro += procesos.get(i).getProcesador();
-                dis += procesos.get(i).getDisco();
-            }
-        }  
     }
     public void pausarReanudarProceso(){
         int row = tabla.getSelectedRow();

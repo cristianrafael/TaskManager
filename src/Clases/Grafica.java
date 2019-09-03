@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
+import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeries;
@@ -21,19 +22,24 @@ import org.jfree.data.xy.XYSeriesCollection;
  * @author Cristian
  */
 public class Grafica extends Thread{
+    java.awt.Panel panel;
     int numero = 1;
     private boolean terminado;
-    private int total;
+    
+    int mem,pro,dis;
+    int a,b,c;
     XYSeries series;
     XYSeriesCollection dataset;
     
     List<Proceso> procesos; //Arreglo de los procesos(hilos) que se van creando
     Random rand;
-    public Grafica(List<Proceso> procesos){
+    public Grafica(List<Proceso> procesos, java.awt.Panel panel){
         super("Grafica");
+        this.panel = panel;
         terminado = false;
         this.procesos = procesos;
-        total = 0;
+        mem = pro = dis = 0;
+        a = b = c = 0;
         rand = new Random();
         series = new XYSeries("Rendimiento");
         dataset = new XYSeriesCollection();
@@ -42,18 +48,20 @@ public class Grafica extends Thread{
         dataset.addSeries(series);
         
         JFreeChart chart = ChartFactory.createXYLineChart(
-                "Memoria RAM", // Título
-                "Tiempo", // Etiqueta Coordenada X
-                "Memoria", // Etiqueta Coordenada Y
+                "Rendimiento", // Título
+                "Tiempo (segundos transcurridos)", // Etiqueta Coordenada X
+                "Recursos de la PC (%)", // Etiqueta Coordenada Y
                 dataset, // Datos
                 PlotOrientation.VERTICAL,
                 true, // Muestra la leyenda de los productos (Rendimiento)
                 true,
                 false
         );
-        ChartFrame frame = new ChartFrame("Ejemplo Grafica Lineal", chart);
-        frame.pack();
-        frame.setVisible(true);
+        ChartPanel pan = new ChartPanel(chart);
+        panel.setLayout(new java.awt.BorderLayout());
+        panel.add(pan);
+        panel.validate();
+        
         
     }
     @Override
@@ -69,13 +77,30 @@ public class Grafica extends Thread{
        
     }
     public void calcularMemoria(){
-        total = 0;
-        for(int i=0; i<procesos.size(); i++)
+        a = b = c = 0;
+        for(int j=0; j<procesos.size(); j++)
         {
-            if(procesos.get(i).getEstado().equals("Ejecutandose"))
-                total += procesos.get(i).getMemoria();
-        }  
-        series.add(numero,total);
+            if(procesos.get(j).getEstado().equals("Ejecutandose") || procesos.get(j).getEstado().equals("Pausado"))
+            {
+                a += procesos.get(j).getMemoria();
+                b += procesos.get(j).getProcesador();
+                c += procesos.get(j).getDisco();
+            }
+            //System.out.println("Memoria: "+mem+ ", pro: "+pro+", dis: "+dis);
+        }
+        mem = a;
+        pro = b;
+        dis = c;
+        series.add(numero,(mem + pro + dis) / 3);
         numero++;
+    }
+    public int getMemoria(){
+        return mem;
+    }
+    public int getProcesador(){
+        return pro;
+    }
+    public int getDisco(){
+        return dis;
     }
 }
