@@ -71,7 +71,7 @@ public class Administrador extends Thread{
         System.out.println("Se creo el primero sin fallas");
         do{
             try {
-                sleep(5000);
+                sleep(3500);
                 unidad = arreglo.get(rand.nextInt(arreglo.size()));
                 String[] row2 = {unidad[0],unidad[1],"En espera...", "0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
                 tablaModelo.addRow(row2);
