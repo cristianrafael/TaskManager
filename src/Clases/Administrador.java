@@ -17,12 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartFrame;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 
 /**
  *
@@ -36,22 +30,17 @@ public class Administrador extends Thread{
     Random rand; //Variable que sirve para generar numeros aleatorios
     int proceso_actual;
     boolean terminado;
-    //Variables para archivos
-    File archivo; //Archivo para cargar los proceso
-    FileReader lector; //Lector que recorre el archivo
-    BufferedReader buffer; //buffer
-    String linea,token; //La linea sirve para leer linea por linea el archivo, el token concatena los caracteres leidos para obtener una cadena
-    int num_token; //El numero de token elige la posicion del arreglo para saber que token es.
-    String[] fila = {"","","","",""};
     
-    XYSeries series;
-    XYSeriesCollection dataset;
+    //Variables para archivos
+    List<String[]> arreglo;
+    String[] unidad = {"","","","",""};
     public Administrador(javax.swing.JTable tabla)
     {
         super("Main"); //Inicializamos el hilo con el nombre que este llevará
                 
         this.tabla = tabla; //Seteamos la tabla que viene del main.java
         
+        arreglo = new ArrayList(); //Arreglo de cadenas para generar procesos aleatorios(proviene del archivo procesos.txt)
         procesos = new ArrayList(); //Inicializamos el arreglo de procesos.
         
         tablaModelo = new DefaultTableModel(); //Aqui inicializamos el modelo de la tabla, seguido del nombre de sus columnas
@@ -69,102 +58,84 @@ public class Administrador extends Thread{
         
         proceso_actual = 0;
         terminado = false;
-        
-        series = new XYSeries("Rendimiento");
-        dataset = new XYSeriesCollection();
-        
-        series.add(1, 1);
-        series.add(2, 6);
-        series.add(3, 3);
-        series.add(4, 10);
-        
-        dataset.addSeries(series);
-        
-        JFreeChart chart = ChartFactory.createXYLineChart(
-                "Ventas 2014", // Título
-                "Tiempo (x)", // Etiqueta Coordenada X
-                "Cantidad", // Etiqueta Coordenada Y
-                dataset, // Datos
-                PlotOrientation.VERTICAL,
-                true, // Muestra la leyenda de los productos (Rendimiento)
-                false,
-                false
-        );
-        ChartFrame frame = new ChartFrame("Ejemplo Grafica Lineal", chart);
-        frame.pack();
-        frame.setVisible(true);
     }
     @Override
     public void run(){
-        procesos.get(proceso_actual).start();
+        
+        unidad = arreglo.get(rand.nextInt(arreglo.size())); 
+        String[] row = {unidad[0],unidad[1],"En espera...", "0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
+        tablaModelo.addRow(row);
+        Proceso task = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]),null);
+        procesos.add(task);
+        task.start();
+        System.out.println("Se creo el primero sin fallas");
         do{
-            if(procesos.get(proceso_actual).terminado() == true)
-            {
-                System.out.println(procesos.get(proceso_actual).terminado());
-                if(proceso_actual < procesos.size())
-                {
-                    proceso_actual++;
-                    procesos.get(proceso_actual).start();
-                    
-             
-                    int numero = rand.nextInt(10) + 1;
-                    int numero2 = rand.nextInt(15)+ 2;
-                    int numero3 = rand.nextInt(10) +3;
-                    String[] row = {"Usuario",""+numero2+"","En espera...", "0 seg",""+numero+" seg", ""+numero3+"KB"};
-                    tablaModelo.addRow(row);
-                    Proceso task = new Proceso("Usuario",tabla,tabla.getRowCount()-1, numero2);
-                    procesos.add(task);
-                }
-                else
-                    terminado = true;
-            }
-            series.add(rand.nextInt(10), rand.nextInt(10));
+            try {
+                sleep(5000);
+                unidad = arreglo.get(rand.nextInt(arreglo.size()));
+                String[] row2 = {unidad[0],unidad[1],"En espera...", "0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
+                tablaModelo.addRow(row2);
+                Proceso task2 = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]),procesos.get(procesos.size()-1));
+                procesos.add(task2);
+                task2.start();
             
-            System.out.println(procesos.get(proceso_actual).terminado());
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+                   
+            
+            System.out.println("Hilo corriendo");
         }while(!terminado);
     }
     private void cargarArchivo(){
         
-        archivo = new File("procesos.txt");
-        if(archivo != null)
-            try {
-                lector = new FileReader(archivo);
-                buffer = new BufferedReader(lector);
-                linea = buffer.readLine();
-                while(linea != null) //Mientras la linea actual no sea nula
-                {   
-                    //System.out.println(linea);
-                    num_token = 0; //Incializamos con el primer token
-                    token = ""; //Vaciamos el token
-                    for(int i=0; i< linea.length(); i++)
+        int num_token; //El numero de token elige la posicion del arreglo para saber que token es.
+        String token; //el token concatena los caracteres leidos para obtener una cadena
+        File archivo = new File("procesos.txt");//Archivo para cargar los proceso
+        
+        try {
+            FileReader lector = new FileReader(archivo); //Lector que recorre el archivo
+            BufferedReader buffer = new BufferedReader(lector); //buffer
+            String linea = buffer.readLine(); //La linea sirve para leer linea por linea el archivo, 
+            while(linea != null) //Mientras la linea actual no sea nula
+            {   
+                num_token = 0; //Incializamos con el primer token
+                token = ""; //Vaciamos el token
+
+                String[] fila = {"","","","",""};
+
+                for(int i=0; i< linea.length(); i++)
+                {
+                    if(linea.charAt(i) == ' ')//Si el caracter leido es un espacio en blanco
                     {
-                        if(linea.charAt(i) == ' ')//Si el caracter leido es un espacio en blanco
+                        if(!token.equals(""))//Si el token contiene algo
                         {
-                            if(!token.equals(""))//Si el token contiene algo
-                            {
-                                fila[num_token] = token;//Verificamos que numero de token es para saber que parametro estamos concatenando
-                                token = "";
-                                num_token++;
-                            }
-                        } 
-                        else
-                            token += linea.charAt(i);
-                    }
-                    fila[num_token] = token;//Agregamos el ultimo token ( Como no hay espacio tiene que ser el ultimo)
-                                
-                    System.out.println(" " + fila[0] + " " + fila[1] + " " + fila[2] + " " + fila[3] + " " + fila[4]);
-                    String[] row = {fila[0], fila[1], "En espera...", "0 seg", ""+fila[2]+" seg", ""+fila[3]+" "+fila[4]};
-                    tablaModelo.addRow(row);
-                    Proceso task = new Proceso(fila[0],tabla,tabla.getRowCount()-1, Integer.parseInt(fila[2]));
-                    procesos.add(task);
-                    //task.start();
-                    linea = buffer.readLine();
-                }                
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
-            }
+                            fila[num_token] = token;//Verificamos que numero de token es para saber que parametro estamos concatenando
+                            token = "";
+                            num_token++;
+                        }
+                    } 
+                    else
+                        token += linea.charAt(i);
+                }
+                fila[num_token] = token;//Agregamos el ultimo token ( Como no hay espacio tiene que ser el ultimo)
+
+                arreglo.add(fila);
+
+                //System.out.println(" " + fila[0] + " " + fila[1] + " " + fila[2] + " " + fila[3] + " " + fila[4]);
+                //String[] row = {fila[0], fila[1], "En espera...", "0 seg", ""+fila[2]+" seg", ""+fila[3]+" "+fila[4]};
+                //tablaModelo.addRow(row);
+                //Proceso task = new Proceso(fila[0],tabla,tabla.getRowCount()-1, Integer.parseInt(fila[2]));
+                //procesos.add(task);
+
+                linea = buffer.readLine();
+            }                
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     public void pausarReanudarProceso(){
         int row = tabla.getSelectedRow();
@@ -175,8 +146,28 @@ public class Administrador extends Thread{
     }
     public void detenerProceso(){
         int row = tabla.getSelectedRow();
-        if(row != -1)
-            procesos.get(row).detener();
+        if(row >= 0)
+        {
+            if(!procesos.get(row).terminado()) //Si el proceso que se desea terminar ya esta terminado pues para que hacer lo de adentro
+            {
+                if(row == 0) //Primer caso, si detenemos el primero
+                {
+                    if(procesos.size()>1) //Primer caso opcion A (Que exista mas de un proceso)
+                        procesos.get(1).setProceso(null);
+                    //Primer caso opcion B (Que no exista otro proceso ademas de ese, entonces no hacemos nada)
+                }
+                else if(row == (procesos.size()-1)) //Segundo caso, estamos terminando el ultimo proceso
+                {
+                    //Aqui practicamente no hariamos nada, puesto que no hay mas procesos
+                }
+                else //Tercer caso, el proceso tiene papa e hijo (ancestro y descendiente)
+                {
+                    //Practicamente vamos a heredarle el proceso ancestro al sucesor.
+                    procesos.get(row+1).setProceso(procesos.get(row).getProceso());
+                }
+                procesos.get(row).detener();
+            }
+        }
         else
             JOptionPane.showMessageDialog(null, "Primero debe seleccionar un proceso");
     }
