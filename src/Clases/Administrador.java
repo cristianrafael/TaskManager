@@ -197,4 +197,12 @@ public class Administrador extends Thread{
         else
             JOptionPane.showMessageDialog(null, "Primero debe seleccionar un proceso");
     }
+    
+    public Grafica getGrafica(){
+        return grafica;
+    }
+    
+    public DefaultTableModel getModelo(){
+        return tablaModelo;
+    }
 }

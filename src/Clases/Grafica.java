@@ -49,7 +49,7 @@ public class Grafica extends Thread{
         
         JFreeChart chart = ChartFactory.createXYLineChart(
                 "Rendimiento", // Título
-                "Tiempo (segundos transcurridos)", // Etiqueta Coordenada X
+                "Tiempo (milisegundos transcurridos)", // Etiqueta Coordenada X
                 "Recursos de la PC (%)", // Etiqueta Coordenada Y
                 dataset, // Datos
                 PlotOrientation.VERTICAL,
@@ -67,12 +67,8 @@ public class Grafica extends Thread{
     @Override
     public void run() {
         do{
-            try {
                 calcularMemoria();
-                sleep(1000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Grafica.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            
         }while(!terminado);
        
     }
@@ -102,5 +98,8 @@ public class Grafica extends Thread{
     }
     public int getDisco(){
         return dis;
+    }
+    public List<Proceso> getProcesos(){
+        return procesos;
     }
 }
