@@ -31,7 +31,7 @@ public class Administrador extends Thread{
     DefaultTableModel tablaModelo; //El modelo de la tabla (se usa para insertar datos)
     List<Proceso> procesos; //Arreglo de los procesos(hilos) que se van creando
     Random rand; //Variable que sirve para generar numeros aleatorios
-    int proceso_siguiente;
+    int ultimo_terminado;
     boolean terminado;
     //Variables para archivos
     File archivo; //Archivo para cargar los proceso
@@ -76,7 +76,7 @@ public class Administrador extends Thread{
         
         cargarArchivo();//Cargamos el archivo
         
-        proceso_siguiente = 0;
+        ultimo_terminado = -1;
         terminado = false;
         
         mem = pro = dis = 0;
@@ -90,24 +90,34 @@ public class Administrador extends Thread{
             pro = grafica.getProcesador(); proc.setText(""+pro+"%");bar_pro.setValue(pro);
             dis = grafica.getDisco(); disc.setText(""+dis+"%");bar_dis.setValue(dis);
             
-            if( procesos.get(proceso_siguiente).getEstado().equals("En espera"))
+            for(int i = ultimo_terminado + 1; i<procesos.size(); i++)
             {
-                if(procesos.get(proceso_siguiente).getMemoria() + mem  <= 100)
-                    if(procesos.get(proceso_siguiente).getProcesador() + pro <=100)
-                        if(procesos.get(proceso_siguiente).getDisco() + dis <= 100)
-                        {
-                            procesos.get(proceso_siguiente).start();
-                            if(proceso_siguiente < procesos.size()-1)
-                                proceso_siguiente++;
-                        }
-            }
-            else if ( procesos.get(proceso_siguiente).getEstado().equals("Terminado"))
-            {
-                if(proceso_siguiente < procesos.size()-1)
-                    proceso_siguiente++;
+                mem = grafica.getMemoria(); memo.setText(""+mem+"%");bar_mem.setValue(mem);
+                pro = grafica.getProcesador(); proc.setText(""+pro+"%");bar_pro.setValue(pro);
+                dis = grafica.getDisco(); disc.setText(""+dis+"%");bar_dis.setValue(dis);
+                if(procesos.get(i).getEstado().equals("En espera"))
+                {
+                    if(procesos.get(i).getMemoria() + mem <= 100)
+                        if(procesos.get(i).getProcesador() + pro <= 100)
+                            if(procesos.get(i).getDisco() + dis <= 100)
+                            {
+                                procesos.get(i).start();
+                                try {
+                                    sleep(1000);
+                                } catch (InterruptedException ex) {
+                                    Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            }
+                }
+                else if(procesos.get(i).getEstado().equals("Terminado"))
+                {
+                    if(i == (ultimo_terminado +1))
+                        ultimo_terminado++;
+                }       
             }
             
-            System.out.println("Memoria: "+grafica.getMemoria()+ ", pro: "+grafica.getProcesador()+", dis: "+grafica.getDisco());
+            
+            //System.out.println("Memoria: "+grafica.getMemoria()+ ", pro: "+grafica.getProcesador()+", dis: "+grafica.getDisco());
             
             /*if(procesos.get(proceso_actual).getEstado().equals("Terminado"))
             {
@@ -132,12 +142,8 @@ public class Administrador extends Thread{
                 else
                     terminado = true;
             }*/
-            System.out.println("Hijo ejecutandose");
-            try {
-                sleep(1000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            //System.out.println("Hijo ejecutandose");
+            
         }while(!terminado);
     }
     private void cargarArchivo(){

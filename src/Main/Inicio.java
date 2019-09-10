@@ -336,7 +336,7 @@ public class Inicio extends javax.swing.JFrame {
             procesos.add(task);
             jDialog1.setVisible(false);
             System.out.println(procesos.size());
-            task.start();
+            //task.start();
         }
     }                                                 
 

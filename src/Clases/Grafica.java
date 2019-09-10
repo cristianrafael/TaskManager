@@ -82,7 +82,7 @@ public class Grafica extends Thread{
                 b += procesos.get(j).getProcesador();
                 c += procesos.get(j).getDisco();
             }
-            //System.out.println("Memoria: "+mem+ ", pro: "+pro+", dis: "+dis);
+            System.out.println("Memoria: "+mem+ ", pro: "+pro+", dis: "+dis);
         }
         mem = a;
         pro = b;
