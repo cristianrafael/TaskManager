@@ -4,19 +4,9 @@
  */
 package Clases;
 
-import Main.Inicio;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -25,117 +15,71 @@ import javax.swing.table.DefaultTableModel;
 public class Administrador extends Thread{
     
     javax.swing.JTable tabla; //La tabla donde se van a mostrar los estados de los procesos (La misma que se crea en Main.java)
-    DefaultTableModel tablaModelo; //El modelo de la tabla (se usa para insertar datos)
     List<Proceso> procesos; //Arreglo de los procesos(hilos) que se van creando
-    Random rand; //Variable que sirve para generar numeros aleatorios
-    int proceso_actual;
+    
+    Generador generador; //Generador de procesos en automatico
+    
+    int proceso_actual,ultimo_proceso,cuanto,contador;
     boolean terminado;
     
-    //Variables para archivos
-    List<String[]> arreglo;
-    String[] unidad = {"","","","",""};
+    
     public Administrador(javax.swing.JTable tabla)
     {
         super("Main"); //Inicializamos el hilo con el nombre que este llevará
-                
+     
         this.tabla = tabla; //Seteamos la tabla que viene del main.java
         
-        arreglo = new ArrayList(); //Arreglo de cadenas para generar procesos aleatorios(proviene del archivo procesos.txt)
         procesos = new ArrayList(); //Inicializamos el arreglo de procesos.
         
-        tablaModelo = new DefaultTableModel(); //Aqui inicializamos el modelo de la tabla, seguido del nombre de sus columnas
-        tablaModelo.addColumn("Nombre");
-        tablaModelo.addColumn("PID");
-        tablaModelo.addColumn("Estado");
-        tablaModelo.addColumn("Tiempo transcurrido");
-        tablaModelo.addColumn("Tiempo restante");
-        tablaModelo.addColumn("Memoria");
-        
-        rand = new Random(); //Se inicializa la variable random
-        tabla.setModel(tablaModelo); //Le asignamos a la tabla, el modelo que acabamos de inicializar.
-        
-        cargarArchivo();//Cargamos el archivo
-        
-        proceso_actual = 0;
+        generador = new Generador(procesos,tabla); //Inicializamos el generador de procesos automatizado 3000
+        ultimo_proceso = proceso_actual = contador =  0;
         terminado = false;
+        cuanto = 10000; //Tiempo entre conmutacion de procesos
     }
     @Override
     public void run(){
-        
-        unidad = arreglo.get(rand.nextInt(arreglo.size())); 
-        String[] row = {unidad[0],unidad[1],"En espera...", "0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
-        tablaModelo.addRow(row);
-        Proceso task = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]),null);
-        procesos.add(task);
-        task.start();
-        System.out.println("Se creo el primero sin fallas");
+        generador.start();
         do{
-            try {
-                sleep(3500);
-                unidad = arreglo.get(rand.nextInt(arreglo.size()));
-                String[] row2 = {unidad[0],unidad[1],"En espera...", "0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
-                tablaModelo.addRow(row2);
-                Proceso task2 = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]),procesos.get(procesos.size()-1));
-                procesos.add(task2);
-                task2.start();
-            
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-                   
-            
-            System.out.println("Hilo corriendo");
-        }while(!terminado);
-    }
-    private void cargarArchivo(){
-        
-        int num_token; //El numero de token elige la posicion del arreglo para saber que token es.
-        String token; //el token concatena los caracteres leidos para obtener una cadena
-        File archivo = new File("procesos.txt");//Archivo para cargar los proceso
-        
-        try {
-            FileReader lector = new FileReader(archivo); //Lector que recorre el archivo
-            BufferedReader buffer = new BufferedReader(lector); //buffer
-            String linea = buffer.readLine(); //La linea sirve para leer linea por linea el archivo, 
-            while(linea != null) //Mientras la linea actual no sea nula
-            {   
-                num_token = 0; //Incializamos con el primer token
-                token = ""; //Vaciamos el token
-
-                String[] fila = {"","","","",""};
-
-                for(int i=0; i< linea.length(); i++)
+            if(proceso_actual < procesos.size())
+            {
+                if(contador >= cuanto) //Cuando el tiempo asignado se rebasa
                 {
-                    if(linea.charAt(i) == ' ')//Si el caracter leido es un espacio en blanco
-                    {
-                        if(!token.equals(""))//Si el token contiene algo
-                        {
-                            fila[num_token] = token;//Verificamos que numero de token es para saber que parametro estamos concatenando
-                            token = "";
-                            num_token++;
-                        }
-                    } 
-                    else
-                        token += linea.charAt(i);
+                    System.out.println("Conmutacion");
+                    contador = 0; //Vaciamos el contador
+                    procesos.get(proceso_actual).setTurno(false); //Ponemos el proceso actual en espera
+                    siguienteProceso();
+                    System.out.println("Hilo corriendo contador->" + proceso_actual+ " el size en este momento es ->"+ procesos.size());
+                    procesos.get(proceso_actual).setTurno(true); //Ahora ponemos el siguiente proceso en marcha (Si no esta inciado se inicia y se empieza a ejecutar)
+
                 }
-                fila[num_token] = token;//Agregamos el ultimo token ( Como no hay espacio tiene que ser el ultimo)
+                else if(procesos.get(proceso_actual).terminado()) //Si el tiempo no se ha concretado entonces vamos a checar si el proceso actual esta terminado
+                {
+                    if(proceso_actual == ultimo_proceso)
+                        ultimo_proceso++;
 
-                arreglo.add(fila);
-
-                //System.out.println(" " + fila[0] + " " + fila[1] + " " + fila[2] + " " + fila[3] + " " + fila[4]);
-                //String[] row = {fila[0], fila[1], "En espera...", "0 seg", ""+fila[2]+" seg", ""+fila[3]+" "+fila[4]};
-                //tablaModelo.addRow(row);
-                //Proceso task = new Proceso(fila[0],tabla,tabla.getRowCount()-1, Integer.parseInt(fila[2]));
-                //procesos.add(task);
-
-                linea = buffer.readLine();
-            }                
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(Inicio.class.getName()).log(Level.SEVERE, null, ex);
-        }
+                    contador = 0; //Vaciamos el contador
+                    siguienteProceso(); //Aqui simplemente cambiamos el proceso actual por el siguiente
+                    procesos.get(proceso_actual).setTurno(true);//Ahora iniciamos el siguiente proceso
+                }
+                else if(procesos.get(proceso_actual).pausado()) //Si el proceso aun no termina, pero esta pausado. Entonces solo cambiamos al que sigue.
+                {
+                    contador = 0; //Vaciamos el contador
+                    siguienteProceso(); //Aqui simplemente cambiamos el proceso actual por el siguiente
+                    procesos.get(proceso_actual).setTurno(true);//Ahora iniciamos el siguiente proceso
+                }
+                else
+                    contador ++;
+                
+                
+            }
+            System.out.println("Hilo corriendo el contador es ->" + contador + " elementos -> " + procesos.size());
+        }while(!terminado);       
+    }
+    public void siguienteProceso(){
+        if(proceso_actual != procesos.size()-1)
+            proceso_actual++;
+        else
+            proceso_actual = ultimo_proceso;
     }
     public void pausarReanudarProceso(){
         int row = tabla.getSelectedRow();
@@ -148,7 +92,7 @@ public class Administrador extends Thread{
         int row = tabla.getSelectedRow();
         if(row >= 0)
         {
-            if(!procesos.get(row).terminado()) //Si el proceso que se desea terminar ya esta terminado pues para que hacer lo de adentro
+            /*if(!procesos.get(row).terminado()) //Si el proceso que se desea terminar ya esta terminado pues para que hacer lo de adentro
             {
                 if(row == 0) //Primer caso, si detenemos el primero
                 {
@@ -165,8 +109,9 @@ public class Administrador extends Thread{
                     //Practicamente vamos a heredarle el proceso ancestro al sucesor.
                     procesos.get(row+1).setProceso(procesos.get(row).getProceso());
                 }
-                procesos.get(row).detener();
-            }
+                
+            }*/
+            procesos.get(row).detener();
         }
         else
             JOptionPane.showMessageDialog(null, "Primero debe seleccionar un proceso");
