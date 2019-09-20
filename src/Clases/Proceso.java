@@ -93,13 +93,14 @@ public class Proceso extends Thread{
                 if(turno)
                 {
                     estado = "Ejecutandose";
-                    prioridad.setTiempoEspera(0);
+                    //prioridad.setTiempoEspera(0);
+                    tabla.setValueAt(estado + " ------------------->",fila,2);
                 }
-                else
-                    estado = "Esperando turno";
-                  
+                else{
+                    estado = "Esperando turno"; 
+                    tabla.setValueAt(estado,fila,2);
+                }
                 prioridad.pausar_reanudar();
-                tabla.setValueAt(estado,fila,2);
                 notify();
             }
         }
