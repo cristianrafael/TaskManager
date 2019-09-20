@@ -41,7 +41,9 @@ public class Generador extends Thread{
         tablaModelo = new DefaultTableModel(); //Aqui inicializamos el modelo de la tabla, seguido del nombre de sus columnas
         tablaModelo.addColumn("Nombre");
         tablaModelo.addColumn("PID");
-        tablaModelo.addColumn("Estado");
+        tablaModelo.addColumn("Estado");        
+        tablaModelo.addColumn("Tasa RR");        
+        tablaModelo.addColumn("Tiempo de inanición");
         tablaModelo.addColumn("Tiempo transcurrido");
         tablaModelo.addColumn("Tiempo restante");
         tablaModelo.addColumn("Memoria");
@@ -56,7 +58,7 @@ public class Generador extends Thread{
     public void run()
     {
         unidad = arreglo.get(rand.nextInt(arreglo.size())); 
-        String[] row = {unidad[0],unidad[1],"En espera...", "0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
+        String[] row = {unidad[0],unidad[1],"En espera...","0","0", "0 seg",""+ unidad[2] +" seg",unidad[3] + " " + unidad[4]};
         tablaModelo.addRow(row);
         Proceso task = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]));
         procesos.add(task);
@@ -64,9 +66,9 @@ public class Generador extends Thread{
         System.out.println("Se creo el primero sin fallas");
         do{
             try {
-                sleep(1000);
+                sleep(3000);
                 unidad = arreglo.get(rand.nextInt(arreglo.size()));
-                String[] row2 = {unidad[0],unidad[1],"En espera...", "0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
+                String[] row2 = {unidad[0],unidad[1],"En espera...","0","0", "0 seg",""+ unidad[2] +" seg",unidad[3] + " " + unidad[4]};
                 tablaModelo.addRow(row2);
                 Proceso task2 = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]));
                 procesos.add(task2);

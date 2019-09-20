@@ -34,7 +34,7 @@ public class Administrador extends Thread{
         generador = new Generador(procesos,tabla); //Inicializamos el generador de procesos automatizado 3000
         ultimo_proceso = proceso_actual = contador =  0;
         terminado = false;
-        cuanto = 5000; //Tiempo entre conmutacion de procesos
+        cuanto = 500000; //Tiempo entre conmutacion de procesos
     }
     @Override
     public void run(){
@@ -48,14 +48,14 @@ public class Administrador extends Thread{
                     contador = 0; //Vaciamos el contador
                     procesos.get(proceso_actual).setTurno(false); //Ponemos el proceso actual en espera
                     siguienteProceso();
-                    System.out.println("Hilo corriendo contador->" + proceso_actual+ " el size en este momento es ->"+ procesos.size());
+                    //System.out.println("Hilo corriendo contador->" + proceso_actual+ " el size en este momento es ->"+ procesos.size());
                     procesos.get(proceso_actual).setTurno(true); //Ahora ponemos el siguiente proceso en marcha (Si no esta inciado se inicia y se empieza a ejecutar)
 
                 }
                 else if(procesos.get(proceso_actual).terminado()) //Si el tiempo no se ha concretado entonces vamos a checar si el proceso actual esta terminado
                 {
                     if(proceso_actual == ultimo_proceso)
-                        ultimo_proceso++;
+                            ultimo_proceso++;
 
                     contador = 0; //Vaciamos el contador
                     siguienteProceso(); //Aqui simplemente cambiamos el proceso actual por el siguiente
@@ -73,13 +73,37 @@ public class Administrador extends Thread{
                 
             }
             System.out.println("Hilo corriendo el contador es ->" + contador + " elementos -> " + procesos.size());
-        }while(!terminado);       
+        }while(!terminado);     
     }
-    public void siguienteProceso(){
-        if(proceso_actual != procesos.size()-1)
-            proceso_actual++;
-        else
-            proceso_actual = ultimo_proceso;
+    public void siguienteProceso()
+    {
+        if(ultimo_proceso != procesos.size())
+        {
+            int proceso_prioritario = proceso_actual;
+            int prioridad = 0;
+
+            int tamaño = procesos.size();
+
+            for(int i = ultimo_proceso ; i<tamaño; i++)
+            {
+                /*if(proceso_actual != tamaño -1)
+                    proceso_actual++;
+                else
+                    proceso_actual = ultimo_proceso;*/
+
+                if(!procesos.get(i).terminado() && i != proceso_actual)
+                {
+                    if(procesos.get(i).getPrioridad() > prioridad)
+                    {
+                        prioridad = procesos.get(i).getPrioridad();
+                        proceso_prioritario = i;
+                    }
+                }
+            }
+            proceso_actual = proceso_prioritario;
+        }
+        System.out.println("Proceso actual->" + proceso_actual);
+        
     }
     public void pausarReanudarProceso(){
         int row = tabla.getSelectedRow();
