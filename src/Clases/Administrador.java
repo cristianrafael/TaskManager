@@ -34,7 +34,7 @@ public class Administrador extends Thread{
         generador = new Generador(procesos,tabla); //Inicializamos el generador de procesos automatizado 3000
         ultimo_proceso = proceso_actual = contador =  0;
         terminado = false;
-        cuanto = 5000; //Tiempo entre conmutacion de procesos
+        cuanto = 500000; //Tiempo entre conmutacion de procesos
     }
     @Override
     public void run(){
