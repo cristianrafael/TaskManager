@@ -48,6 +48,8 @@ public class Creditos extends javax.swing.JFrame {
         hecho1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -73,8 +75,10 @@ public class Creditos extends javax.swing.JFrame {
         jCheckBox3.setSelected(true);
         jCheckBox3.setText("4. RR");
 
+        jCheckBox4.setSelected(true);
         jCheckBox4.setText("5. Prioridades");
 
+        jCheckBox5.setSelected(true);
         jCheckBox5.setText("6. Colas multiples");
 
         jCheckBox6.setText("7. Productor consumidor");
@@ -105,6 +109,20 @@ public class Creditos extends javax.swing.JFrame {
             }
         });
 
+        jButton3.setText("Informacion");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        jButton4.setText("Informacion");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -115,7 +133,9 @@ public class Creditos extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jCheckBox1)
@@ -167,9 +187,13 @@ public class Creditos extends javax.swing.JFrame {
                     .addComponent(jCheckBox3)
                     .addComponent(jButton2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jCheckBox4)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jCheckBox4)
+                    .addComponent(jButton3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jCheckBox5)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jCheckBox5)
+                    .addComponent(jButton4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jCheckBox6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -182,7 +206,7 @@ public class Creditos extends javax.swing.JFrame {
                 .addComponent(jCheckBox10)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jCheckBox11)
-                .addContainerGap(53, Short.MAX_VALUE))
+                .addContainerGap(37, Short.MAX_VALUE))
         );
 
         pack();
@@ -200,6 +224,14 @@ public class Creditos extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null, "Sistemas operativos Diseño e implementacion por Andrew Tanenbaum \nPagina 84 Planificacion Round Robin (de torneo)");
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        JOptionPane.showMessageDialog(null, "Para hacer esta practica me base en el libro de Sistemas operativos de Wiliam Stallings en su segunda edicion\n Las paginas donde explican las prioridades son apartir de la 350 y hasta la 364 correspondientes al capitulo 8\n\nDentro de todas las prioridades utilicé la de PRIMERO EL DE MAYOR TASA DE RESPUESTA en su modo NO APROPIATIVO\n\nAdemas en este mismo codigo podemos colocar un CUANTO para aplicar la teoria de las clases con ROUND ROBIN\nBasandonos en el libro de Tanenbaum");
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        JOptionPane.showMessageDialog(null, "La practica se baso en el libro de Sistemas operativos de Wiliam Stallings en su segunda edicion\n Las paginas donde hablan del tema son la 362 y hasta la 364 correspondientes al capitulo 8\n\nPara la planificacion entre colas fue round robin, y en cada cola de igual forma se uso round robin");
+    }//GEN-LAST:event_jButton4ActionPerformed
+    
     /**
      * @param args the command line arguments
      */
@@ -240,6 +272,8 @@ public class Creditos extends javax.swing.JFrame {
     private javax.swing.JLabel hecho1;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBox jCheckBox10;
     private javax.swing.JCheckBox jCheckBox11;
