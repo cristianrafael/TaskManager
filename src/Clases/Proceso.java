@@ -34,7 +34,7 @@ public class Proceso extends Thread{
         while(restante>0)
         {
             try {
-                sleep(1000);
+                sleep(2000);
                 
                 synchronized (this)
                 {
@@ -50,8 +50,8 @@ public class Proceso extends Thread{
             
             transcurrido++;
             restante = tiempo - transcurrido;
-            tabla.setValueAt("" + transcurrido +" seg",fila,3);
-            tabla.setValueAt("" + restante + " seg",fila,4);
+            tabla.setValueAt("" + transcurrido +" seg",fila,4);
+            tabla.setValueAt("" + restante + " seg",fila,5);
             
             System.out.println("Hilo corriendo");
         }
@@ -79,7 +79,10 @@ public class Proceso extends Thread{
         {
             this.turno = turno;
             if(!iniciado)
+            {
+                iniciado = true;
                 start();
+            }
             else
             {
                 estado = turno ? "Ejecutandose" : "Esperando turno";
