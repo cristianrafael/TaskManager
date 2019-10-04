@@ -43,7 +43,7 @@ public class Generador extends Thread{
         tablaModelo.addColumn("Nombre");
         tablaModelo.addColumn("PID");
         tablaModelo.addColumn("Estado");
-        tablaModelo.addColumn("Cola"); 
+        tablaModelo.addColumn("Tipo"); 
         tablaModelo.addColumn("Tiempo transcurrido");
         tablaModelo.addColumn("Tiempo restante");
         tablaModelo.addColumn("Memoria");
@@ -52,7 +52,7 @@ public class Generador extends Thread{
         rand = new Random(); //Se inicializa la variable random
         
         arreglo = new ArrayList(); //Arreglo de cadenas para generar procesos aleatorios(proviene del archivo procesos.txt)
-        tipo_cola = "Proceso critico";
+        tipo_cola = "Productor";
         cargarArchivo();//Cargamos el archivo
     }
     @Override
@@ -63,25 +63,21 @@ public class Generador extends Thread{
         tablaModelo.addRow(row);
         Proceso task = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]));
         colas.get(conmutador).add(task);
-        task.start();
+        task.iniciar();
         do{
             try {
                 sleep(1000);
                 
-                if(conmutador == 0)
+                conmutador = rand.nextInt(2);
+                if(conmutador == 1)
                 {
-                    conmutador ++;
-                    tipo_cola = "Proceso de usuario";
-                }
-                else if(conmutador == 1)
-                {
-                    conmutador ++;
-                    tipo_cola = "Proceso demonio";
+                    conmutador = 0;
+                    tipo_cola = "Productor";
                 }
                 else
                 {
-                    conmutador = 0;
-                    tipo_cola = "Proceso critico";
+                    conmutador = 1;
+                    tipo_cola = "Consumidor";
                 }
                                 
                 unidad = arreglo.get(rand.nextInt(arreglo.size()));

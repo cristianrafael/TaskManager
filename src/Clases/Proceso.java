@@ -16,7 +16,7 @@ public class Proceso extends Thread{
     private int fila,tiempo,transcurrido,restante;
     private String estado = "Creado"; //Los estados que puede tener son: Creado, Ejecutandose, Pausado , Terminado, Esperando turno
     private boolean turno,iniciado;
-    
+    private boolean termino_forzado;
     public Proceso(String nombre_proceso, javax.swing.JTable tabla, int fila,int tiempo){
        super(nombre_proceso);
        this.tabla = tabla;
@@ -24,21 +24,21 @@ public class Proceso extends Thread{
        this.tiempo = this.restante = tiempo;
        this.transcurrido = 0;
        turno = iniciado = false;
+       this.termino_forzado = false;
     }
     @Override
     public void run() {
-        iniciado = true;
         estado = "Ejecutandose";
         tabla.setValueAt(estado,fila,2);
         
         while(restante>0)
         {
             try {
-                sleep(2000);
+                sleep(1000);
                 
                 synchronized (this)
                 {
-                    while(pausado() || esperando_turno())
+                    while(pausado())
                         wait();
                     
                     if(terminado())
@@ -58,6 +58,9 @@ public class Proceso extends Thread{
         estado = "Terminado";
         tabla.setValueAt(estado,fila,2);
     }
+    public int getFila(){
+        return fila;
+    }
     public boolean terminado(){
         if(!estado.equals("Terminado"))
             return false;
@@ -68,28 +71,17 @@ public class Proceso extends Thread{
             return false;
         return true;
     }
-    public boolean esperando_turno(){
-        if(!estado.equals("Esperando turno"))
-            return false;
-        return true;
+    public boolean iniciado(){
+        return iniciado;
     }
-    synchronized void setTurno(boolean turno)
+    public void iniciar()
     {
-        if(!terminado() && !pausado())
-        {
-            this.turno = turno;
-            if(!iniciado)
-            {
-                iniciado = true;
-                start();
-            }
-            else
-            {
-                estado = turno ? "Ejecutandose" : "Esperando turno";
-                tabla.setValueAt(estado,fila,2);
-                notify();
-            }
-        }
+        iniciado = true;
+        start();
+    }
+    public boolean getTerminoForzado()
+    {
+        return termino_forzado;
     }
     synchronized void pausar_reanudar(){
         if(!terminado())
@@ -110,6 +102,7 @@ public class Proceso extends Thread{
         if(!terminado())
         {
             estado = "Terminado";
+            termino_forzado = iniciado = true;
             tabla.setValueAt(estado,fila,2);
             notify();
         }
