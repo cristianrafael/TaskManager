@@ -15,51 +15,24 @@ import javax.swing.JOptionPane;
 public class Administrador extends Thread{
     
     javax.swing.JTable tabla; //La tabla donde se van a mostrar los estados de los procesos (La misma que se crea en Main.java)
-    javax.swing.JProgressBar progressBar;
-    javax.swing.JLabel estado_barra;
-    javax.swing.JLabel elementos;
-    List<Proceso> consumidores; //Cola 1 cuantos 4
-    List<Proceso> productores; //Cola 2 cuantos 2
-    
-    List<List> colas; //Lista
-    
-    
+    List<Proceso> procesos; //Productores y Lectores
+        
     Generador generador; //Generador de procesos en automatico
-    
     boolean terminado; //Iteracion infinita hasta que se indique lo contrario
     
-    boolean produciendo;
-    
-    int cola_contador;
-    
-    int consumidor_actual, productor_actual;
-    
-    int consumidores_restantes;
-    int productores_restantes;
-    
-    public Administrador(javax.swing.JTable tabla , javax.swing.JProgressBar progressBar, javax.swing.JLabel estado_barra, javax.swing.JLabel elementos)
+    int proceso_actual;
+    int recurso; //0 para disponible, 1 para leyendo, 2 para escribiendo
+    int [] lectores_activos = new int [1]; //Contador de lectores activos
+    public Administrador(javax.swing.JTable tabla)
     {
         super("Main"); //Inicializamos el hilo con el nombre que este llevará
      
         this.tabla = tabla; //Seteamos la tabla que viene del main.java
-        this.progressBar = progressBar;
-        this.estado_barra = estado_barra;
-        this.elementos = elementos;
-        productores = new ArrayList();
-        consumidores = new ArrayList();
-        
-        colas = new ArrayList();
-        
-        colas.add(productores);
-        colas.add(consumidores);
-        
-        generador = new Generador(colas,tabla); //Inicializamos el generador de procesos automatizado 3000
+        procesos = new ArrayList();
+        lectores_activos[0] = 0;
+        generador = new Generador(procesos,tabla,lectores_activos); //Inicializamos el generador de procesos automatizado 3000
         terminado = false;
-        produciendo = true;
-        consumidor_actual = productor_actual = cola_contador = 0;
-        productores_restantes = 8;
-        consumidores_restantes = 5;
-        progressBar.setValue(0);
+        proceso_actual = recurso = 0;
     }
     @Override
     public void run(){
@@ -67,121 +40,68 @@ public class Administrador extends Thread{
         do
         {   
             System.out.print("Estado -> ");
-            if(produciendo)
+            if(procesos.size() > proceso_actual)
             {
-                System.out.println("Produciendo");
-                estado_barra.setText("Produciendo..");
-                if(progressBar.getValue()< 100 && productor_actual < productores.size())
+                if(!procesos.get(proceso_actual).iniciado())
                 {
-                    
-                    if(productores.get(productor_actual).terminado())
+                    boolean tipo = procesos.get(proceso_actual).getTipo();
+                    switch(recurso)
                     {
-                        if(!productores.get(productor_actual).getTerminoForzado())
-                        {
-                            productores_restantes--;
-                            progressBar.setValue(progressBar.getValue() + 10);
-                            elementos.setText("Elementos : " + progressBar.getValue() / 10);
-                            if(productores_restantes == 0)
+                        case 0: //Disponible
+                            procesos.get(proceso_actual).iniciar(); //Como esta desocupado activamos el proceso sin importar lo que sea
+                            if(tipo) //Si es escritor
+                                recurso = 2; //Indicamos que se esta escribiendo
+                            else
                             {
-                                produciendo = false;
-                                if(consumidores_restantes == 0)
-                                    consumidores_restantes = 5;
+                                recurso = 1; //Si es lector indicamos leyendo
+                                proceso_actual++; //Pasamos al siguiente proceso para ver si es otro lector
                             }
-                        }                            
-                        productor_actual++;
-                    }
-                    else if(!productores.get(productor_actual).iniciado())
-                    {
-                        System.out.println("Produciendo dentro");
-                        productores.get(productor_actual).iniciar();
-                        System.out.println("Produciendo fuera");
+                        break;
+                        case 1: //Leyendo
+                            if(!tipo)
+                            {
+                                procesos.get(proceso_actual).iniciar(); //Como esta desocupado activamos el proceso sin importar lo que sea
+                                proceso_actual++; //Avanzamos al siguiente proceso
+                            }
+                            else
+                            {
+                                if(lectores_activos[0] >0) //Mientras siga habiendo lectores, el escritor no puede hacer otra cosa mas que esperar
+                                    System.out.print("Esperando a lector(es)");
+                                else
+                                {
+                                   procesos.get(proceso_actual).iniciar();
+                                   recurso = 2; //Escribiendo en el recurso
+                                }  
+                            }
+                        break;
+                        case 2: //Escribiendo
+                            //Te esperas wey, hasta que el escritor acabe (No me importa quien seas)
+                            System.out.print("Esperando a escritor");
+                        break;
+                           
                     }
                 }
-                else
-                    produciendo = false;
-            }
-            else
-            {
-                System.out.println("Consumiendo");
-                estado_barra.setText("Consumiendo..");
-                if(progressBar.getValue()> 0 && consumidor_actual < productores.size())
+                else if(procesos.get(proceso_actual).terminado())
                 {
-                    if(!consumidores.get(consumidor_actual).iniciado())
-                    {
-                        System.out.println("Consumiendo dentro");
-                        consumidores.get(consumidor_actual).iniciar();
-                        System.out.println("Consumidores fuera");
-                    }
-                    else if(consumidores.get(consumidor_actual).terminado())
-                    {
-                        if(!consumidores.get(consumidor_actual).getTerminoForzado())
-                        {
-                            consumidores_restantes--;
-                            progressBar.setValue(progressBar.getValue() - 10);
-                            elementos.setText("Elementos : " + progressBar.getValue() / 10);
-                            if(consumidores_restantes == 0)
-                            {
-                                produciendo = true;
-                                if(productores_restantes == 0)
-                                    productores_restantes = 8;
-                            }
-                        }                        
-                        consumidor_actual++;
-                    }                      
+                    proceso_actual++;
+                    recurso = 0;
                 }
-                else
-                    produciendo = true;
             }
+            
         }
         while(!terminado);       
     }
     public void pausarReanudarProceso(){
         int row = tabla.getSelectedRow();
         if(row != -1)
-        {
-            boolean encontrado = false;
-            for(int i = 0 ; i< productores.size(); i++)
-            {
-                productores.get(row).pausar_reanudar();
-                encontrado = true;
-                break;
-            }
-            if(!encontrado)
-            for(int i = 0 ; i< consumidores.size(); i++)
-            {
-                consumidores.get(row).pausar_reanudar();
-                break;
-            }    
-            
-        }
-        
+            procesos.get(row).pausar_reanudar();
         else
             JOptionPane.showMessageDialog(null, "Primero debe seleccionar un proceso");
     }
     public void detenerProceso(){
         int row = tabla.getSelectedRow();
         if(row != -1)
-        {
-            boolean encontrado = false;
-            for(int i = 0 ; i< productores.size(); i++)
-            {
-                if(productores.get(i).getFila() == row)
-                {
-                    productores.get(i).detener();
-                    encontrado = true;
-                    break;
-                }
-            }
-            if(!encontrado)
-            for(int i = 0 ; i< consumidores.size(); i++)
-            {
-                if(consumidores.get(i).getFila() == row)
-                {
-                    consumidores.get(row).detener();
-                    break;
-                }
-            }   
-        }
+            procesos.get(row).detener();
         else
             JOptionPane.showMessageDialog(null, "Primero debe seleccionar un proceso");
     }

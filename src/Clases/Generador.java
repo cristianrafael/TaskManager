@@ -1,4 +1,4 @@
-/*
+ /*
  * Esta clase se creo con el proposito de crear procesos de manera automatica.
  */
 package Clases;
@@ -24,7 +24,7 @@ public class Generador extends Thread{
     
     javax.swing.JTable tabla; //La tabla donde se van a mostrar los estados de los procesos (La misma que se crea en Main.java)
     DefaultTableModel tablaModelo; //El modelo de la tabla (se usa para insertar datos)
-    List<List> colas; //Arreglo de los procesos(hilos) que se van creando
+    List<Proceso> procesos; //Arreglo de los procesos(hilos) que se van creando
     boolean terminado; //Bandera que termina el while del run
     
     //Variables para archivos
@@ -32,13 +32,14 @@ public class Generador extends Thread{
     String[] unidad = {"","","","",""};
     Random rand; //Variable que sirve para generar numeros aleatorios
     
-    int conmutador = 0;
-    String tipo_cola;
-    public Generador(List<List> colas, javax.swing.JTable tabla)
+    int conmutador;
+    int [] lectores_activos = new int [1];
+    String tipo_proceso;
+    public Generador(List<Proceso> procesos, javax.swing.JTable tabla, int[] lectores_activos)
     {
-        this.colas = colas;
+        this.procesos = procesos;
         this.tabla = tabla;
-        
+        this.lectores_activos = lectores_activos;
         tablaModelo = new DefaultTableModel(); //Aqui inicializamos el modelo de la tabla, seguido del nombre de sus columnas
         tablaModelo.addColumn("Nombre");
         tablaModelo.addColumn("PID");
@@ -52,49 +53,32 @@ public class Generador extends Thread{
         rand = new Random(); //Se inicializa la variable random
         
         arreglo = new ArrayList(); //Arreglo de cadenas para generar procesos aleatorios(proviene del archivo procesos.txt)
-        tipo_cola = "Productor";
+        tipo_proceso = "Escritor";
+        conmutador = 1;
         cargarArchivo();//Cargamos el archivo
     }
     @Override
     public void run()
     {
         unidad = arreglo.get(rand.nextInt(arreglo.size())); 
-        String[] row = {unidad[0],unidad[1],"En espera...",tipo_cola,"0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
+        String[] row = {unidad[0],unidad[1],"En espera...",tipo_proceso,"0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
         tablaModelo.addRow(row);
-        Proceso task = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]));
-        colas.get(conmutador).add(task);
+        Proceso task = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]),true,lectores_activos);
+        procesos.add(task);
         task.iniciar();
         do{
             try {
                 sleep(1000);
-                
                 conmutador = rand.nextInt(2);
-                if(conmutador == 1)
-                {
-                    conmutador = 0;
-                    tipo_cola = "Productor";
-                }
-                else
-                {
-                    conmutador = 1;
-                    tipo_cola = "Consumidor";
-                }
-                                
+                tipo_proceso = conmutador == 1 ? "Escritor" : "Lector";
                 unidad = arreglo.get(rand.nextInt(arreglo.size()));
-                
-                String[] row2 = {unidad[0],unidad[1],"En espera...",tipo_cola,"0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
+                String[] row2 = {unidad[0],unidad[1],"En espera...",tipo_proceso,"0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
                 tablaModelo.addRow(row2);
-                Proceso task2 = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]));
-                
-                
-                colas.get(conmutador).add(task2);
-            
+                Proceso task2 = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]), conmutador == 1 ? true: false, lectores_activos);
+                procesos.add(task2);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
-                   
-            
             System.out.println("Hilo corriendo");
         }while(!terminado);
     }

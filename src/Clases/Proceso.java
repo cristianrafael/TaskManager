@@ -12,25 +12,30 @@ package Clases;
  */
 public class Proceso extends Thread{
     
-    private javax.swing.JTable tabla;
-    private int fila,tiempo,transcurrido,restante;
-    private String estado = "Creado"; //Los estados que puede tener son: Creado, Ejecutandose, Pausado , Terminado, Esperando turno
-    private boolean turno,iniciado;
-    private boolean termino_forzado;
-    public Proceso(String nombre_proceso, javax.swing.JTable tabla, int fila,int tiempo){
+    javax.swing.JTable tabla;
+    int fila,tiempo,transcurrido,restante;
+    String estado = "Creado"; //Los estados que puede tener son: Creado, Ejecutandose, Pausado , Terminado, Esperando turno
+    
+    boolean iniciado;
+    boolean termino_forzado;
+    
+    boolean tipo; //True escritor  o False para lector
+    int [] lectores_activos = new int [1];
+    public Proceso(String nombre_proceso, javax.swing.JTable tabla, int fila,int tiempo, boolean tipo, int[] lectores_activos){
        super(nombre_proceso);
        this.tabla = tabla;
+       this.lectores_activos = lectores_activos;
        this.fila = fila;
        this.tiempo = this.restante = tiempo;
        this.transcurrido = 0;
-       turno = iniciado = false;
        this.termino_forzado = false;
+       this.tipo = tipo;
     }
     @Override
     public void run() {
         estado = "Ejecutandose";
         tabla.setValueAt(estado,fila,2);
-        
+                
         while(restante>0)
         {
             try {
@@ -57,9 +62,15 @@ public class Proceso extends Thread{
         }
         estado = "Terminado";
         tabla.setValueAt(estado,fila,2);
+        
+        if(!tipo) //Si el proceso es lector entonces reducimos
+            lectores_activos[0]--;
     }
     public int getFila(){
         return fila;
+    }
+    public boolean getTipo(){
+        return tipo;
     }
     public boolean terminado(){
         if(!estado.equals("Terminado"))
@@ -77,6 +88,8 @@ public class Proceso extends Thread{
     public void iniciar()
     {
         iniciado = true;
+        if(!tipo) //Si el proceso es lector entonces sumamos el contador
+            lectores_activos[0]++;
         start();
     }
     public boolean getTerminoForzado()
@@ -89,10 +102,7 @@ public class Proceso extends Thread{
             if(!pausado())
                 estado = "Pausado";
             else
-                if(turno)
-                   estado = "Ejecutandose";
-                else
-                   estado = "Esperando turno";
+                estado = "Ejecutandose";
             
             tabla.setValueAt(estado,fila,2);
             notify();
