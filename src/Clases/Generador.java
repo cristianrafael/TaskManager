@@ -23,8 +23,9 @@ import javax.swing.table.DefaultTableModel;
 public class Generador extends Thread{
     
     javax.swing.JTable tabla; //La tabla donde se van a mostrar los estados de los procesos (La misma que se crea en Main.java)
+    javax.swing.JProgressBar progressBar;
     DefaultTableModel tablaModelo; //El modelo de la tabla (se usa para insertar datos)
-    List<List> colas; //Arreglo de los procesos(hilos) que se van creando
+    List<Proceso> procesos; //Arreglo de los procesos(hilos) que se van creando
     boolean terminado; //Bandera que termina el while del run
     
     //Variables para archivos
@@ -34,16 +35,15 @@ public class Generador extends Thread{
     
     int conmutador = 0;
     String tipo_cola;
-    public Generador(List<List> colas, javax.swing.JTable tabla)
+    public Generador(List<Proceso> procesos, javax.swing.JTable tabla,javax.swing.JProgressBar progressBar)
     {
-        this.colas = colas;
         this.tabla = tabla;
-        
+        this.progressBar = progressBar;
+        this.procesos = procesos;
         tablaModelo = new DefaultTableModel(); //Aqui inicializamos el modelo de la tabla, seguido del nombre de sus columnas
         tablaModelo.addColumn("Nombre");
         tablaModelo.addColumn("PID");
         tablaModelo.addColumn("Estado");
-        tablaModelo.addColumn("Tipo"); 
         tablaModelo.addColumn("Tiempo transcurrido");
         tablaModelo.addColumn("Tiempo restante");
         tablaModelo.addColumn("Memoria");
@@ -52,42 +52,28 @@ public class Generador extends Thread{
         rand = new Random(); //Se inicializa la variable random
         
         arreglo = new ArrayList(); //Arreglo de cadenas para generar procesos aleatorios(proviene del archivo procesos.txt)
-        tipo_cola = "Productor";
+        
         cargarArchivo();//Cargamos el archivo
     }
     @Override
     public void run()
     {
         unidad = arreglo.get(rand.nextInt(arreglo.size())); 
-        String[] row = {unidad[0],unidad[1],"En espera...",tipo_cola,"0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
+        String[] row = {unidad[0],unidad[1],"En espera...","0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
         tablaModelo.addRow(row);
-        Proceso task = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]));
-        colas.get(conmutador).add(task);
+        Proceso task = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]),progressBar);
+        procesos.add(task);
         task.iniciar();
         do{
             try {
-                sleep(1000);
+                sleep(500);
                 
-                conmutador = rand.nextInt(2);
-                if(conmutador == 1)
-                {
-                    conmutador = 0;
-                    tipo_cola = "Productor";
-                }
-                else
-                {
-                    conmutador = 1;
-                    tipo_cola = "Consumidor";
-                }
-                                
                 unidad = arreglo.get(rand.nextInt(arreglo.size()));
                 
-                String[] row2 = {unidad[0],unidad[1],"En espera...",tipo_cola,"0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
+                String[] row2 = {unidad[0],unidad[1],"En espera...","0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
                 tablaModelo.addRow(row2);
-                Proceso task2 = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]));
-                
-                
-                colas.get(conmutador).add(task2);
+                Proceso task2 = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]),progressBar);
+                procesos.add(task2);
             
             } catch (InterruptedException ex) {
                 Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);

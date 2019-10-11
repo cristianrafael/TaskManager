@@ -13,13 +13,15 @@ package Clases;
 public class Proceso extends Thread{
     
     private javax.swing.JTable tabla;
+    javax.swing.JProgressBar progressBar;
     private int fila,tiempo,transcurrido,restante;
     private String estado = "Creado"; //Los estados que puede tener son: Creado, Ejecutandose, Pausado , Terminado, Esperando turno
     private boolean turno,iniciado;
     private boolean termino_forzado;
-    public Proceso(String nombre_proceso, javax.swing.JTable tabla, int fila,int tiempo){
+    public Proceso(String nombre_proceso, javax.swing.JTable tabla, int fila,int tiempo ,javax.swing.JProgressBar progressBar){
        super(nombre_proceso);
        this.tabla = tabla;
+       this.progressBar = progressBar;
        this.fila = fila;
        this.tiempo = this.restante = tiempo;
        this.transcurrido = 0;
@@ -50,13 +52,14 @@ public class Proceso extends Thread{
             
             transcurrido++;
             restante = tiempo - transcurrido;
-            tabla.setValueAt("" + transcurrido +" seg",fila,4);
-            tabla.setValueAt("" + restante + " seg",fila,5);
+            tabla.setValueAt("" + transcurrido +" seg",fila,3);
+            tabla.setValueAt("" + restante + " seg",fila,4);
             
             System.out.println("Hilo corriendo");
         }
         estado = "Terminado";
         tabla.setValueAt(estado,fila,2);
+        progressBar.setValue(progressBar.getValue() - 10);
     }
     public int getFila(){
         return fila;
@@ -76,8 +79,12 @@ public class Proceso extends Thread{
     }
     public void iniciar()
     {
-        iniciado = true;
-        start();
+        if(!terminado())
+        {
+            iniciado = true;
+            progressBar.setValue(progressBar.getValue() + 10);
+            start();
+        }
     }
     public boolean getTerminoForzado()
     {
