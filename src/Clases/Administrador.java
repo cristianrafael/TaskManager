@@ -6,6 +6,8 @@ package Clases;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -39,6 +41,11 @@ public class Administrador extends Thread{
         generador.start();
         do
         {   
+            try {
+                sleep(1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);
+            }
             System.out.print("Estado -> ");
             if(procesos.size() > proceso_actual)
             {
