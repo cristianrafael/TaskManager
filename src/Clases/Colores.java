@@ -16,16 +16,20 @@ import javax.swing.table.DefaultTableCellRenderer;
  */
 public class Colores extends DefaultTableCellRenderer {
     
+    int[][] paleta = {{192,192,192},{128,128,128},{64,64,64},{255,0,0},{255,175,175},{255,200,0},{255,255,0},{0,255,0},{255,0,255},{0,255,255},{0,0,255}};
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean Selected, boolean hasFocus, int row, int col){
         super.getTableCellRendererComponent(table,value,Selected,hasFocus,row,col);
         
-        if(table.getValueAt(row, 2).toString().equals("En espera..."))
-            setBackground(Color.yellow);
-        else if(table.getValueAt(row, 2).toString().equals("Ejecutandose"))
-            setBackground(Color.green);
+        String codigo = table.getValueAt(row, col).toString();
+        if(!codigo.equals(""))
+        {
+            int c = Integer.parseInt(codigo) % 11;
+            
+            setBackground(new Color(paleta[c][0],paleta[c][1],paleta[c][2]));  
+        }
         else
-            setBackground(Color.red);
+            setBackground(Color.WHITE);
         return this;
     }
 }

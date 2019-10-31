@@ -22,9 +22,11 @@ import javax.swing.table.DefaultTableModel;
  */
 public class Generador extends Thread{
     
-    javax.swing.JTable tabla; //La tabla donde se van a mostrar los estados de los procesos (La misma que se crea en Main.java)
-    javax.swing.JProgressBar progressBar;
-    DefaultTableModel tablaModelo; //El modelo de la tabla (se usa para insertar datos)
+    javax.swing.JTable tablaProcesos; //La tabla donde se van a mostrar los estados de los procesos (La misma que se crea en Main.java)
+    javax.swing.JTable tablaMemoria; //La tabla donde se van a mostrar la memoria ocupada de los procesos (La misma que se crea en Main.java)
+    DefaultTableModel modeloProcesos; //El modelo de la tabla "tablaProcesos" (se usa para insertar datos)
+    DefaultTableModel modeloMemoria; //El modelo de la tabla "tablaMemoria" (se usa para insertar datos)    
+    
     List<Proceso> procesos; //Arreglo de los procesos(hilos) que se van creando
     boolean terminado; //Bandera que termina el while del run
     
@@ -33,24 +35,40 @@ public class Generador extends Thread{
     String[] unidad = {"","","","",""};
     Random rand; //Variable que sirve para generar numeros aleatorios
     
-    int conmutador = 0;
-    String tipo_cola;
-    public Generador(List<Proceso> procesos, javax.swing.JTable tabla,javax.swing.JProgressBar progressBar)
+    int[] bloquesDisponibles;
+    int[][] matriz;
+    Colores colores;
+    public Generador(List<Proceso> procesos, javax.swing.JTable tablaProcesos, javax.swing.JTable tablaMemoria, int[] bloquesDisponibles, int[][] matriz)
     {
-        this.tabla = tabla;
-        this.progressBar = progressBar;
+        this.tablaProcesos = tablaProcesos;
+        this.tablaMemoria = tablaMemoria;
         this.procesos = procesos;
-        tablaModelo = new DefaultTableModel(); //Aqui inicializamos el modelo de la tabla, seguido del nombre de sus columnas
-        tablaModelo.addColumn("Nombre");
-        tablaModelo.addColumn("PID");
-        tablaModelo.addColumn("Estado");
-        tablaModelo.addColumn("Tiempo transcurrido");
-        tablaModelo.addColumn("Tiempo restante");
-        tablaModelo.addColumn("Memoria");
-        tabla.setModel(tablaModelo); //Le asignamos a la tabla, el modelo que acabamos de inicializar.
+        this.bloquesDisponibles = bloquesDisponibles;
+        this.matriz = matriz;
+        modeloProcesos = new DefaultTableModel(); //Aqui inicializamos el modelo de la tabla, seguido del nombre de sus columnas
+        modeloProcesos.addColumn("Nombre");
+        modeloProcesos.addColumn("PID");
+        modeloProcesos.addColumn("Estado");
+        modeloProcesos.addColumn("Tiempo transcurrido");
+        modeloProcesos.addColumn("Tiempo restante");
+        modeloProcesos.addColumn("Memoria");
+        tablaProcesos.setModel(modeloProcesos); //Le asignamos a la tabla, el modelo que acabamos de inicializar.
+        
+        modeloMemoria = new DefaultTableModel(); //Aqui inicializamos el modelo de la tabla, seguid del nombre de sus columnas
+        modeloMemoria.addColumn(" ");
+        modeloMemoria.addColumn(" ");
+        modeloMemoria.addColumn(" ");
+        modeloMemoria.addColumn(" ");
+        tablaMemoria.setModel(modeloMemoria); //Le asignamos a la tabla, el modelo que acabamos de inicializar
+        colores = new Colores();
+        tablaMemoria.setDefaultRenderer(Object.class, colores);
+        for(int i = 0; i<20 ; i++)
+        {
+            String[] row = {"","","",""};
+            modeloMemoria.addRow(row);
+        }
         
         rand = new Random(); //Se inicializa la variable random
-        
         arreglo = new ArrayList(); //Arreglo de cadenas para generar procesos aleatorios(proviene del archivo procesos.txt)
         
         cargarArchivo();//Cargamos el archivo
@@ -58,30 +76,28 @@ public class Generador extends Thread{
     @Override
     public void run()
     {
-        unidad = arreglo.get(rand.nextInt(arreglo.size())); 
-        String[] row = {unidad[0],unidad[1],"En espera...","0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
-        tablaModelo.addRow(row);
-        Proceso task = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]),progressBar);
-        procesos.add(task);
-        task.iniciar();
         do{
-            try {
-                sleep(500);
-                
-                unidad = arreglo.get(rand.nextInt(arreglo.size()));
-                
-                String[] row2 = {unidad[0],unidad[1],"En espera...","0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
-                tablaModelo.addRow(row2);
-                Proceso task2 = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]),progressBar);
-                procesos.add(task2);
+            //Agregamos un proceso aleatorio del arreglo de procesos
+            unidad = arreglo.get(rand.nextInt(arreglo.size())); 
+
+            //Estructuramos nuestra fila para la tabla con ese proceso aleatorio
+            String[] row = {unidad[0],unidad[1],"Creado","0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
+
+            //Agregamos la nueva fila a la tabla de procesos
+            modeloProcesos.addRow(row);
+
+            //Ahora vamos a crear el proceso como tal con la misma informacion de arriba
+            Proceso task = new Proceso(unidad[0],tablaProcesos,tablaMemoria,tablaProcesos.getRowCount()-1, Integer.parseInt(unidad[2]),Integer.parseInt(unidad[3])/100 ,Integer.parseInt(unidad[1]), bloquesDisponibles,matriz);
+
+            //Agregamos el proceso creado a la lista de procesos
+            procesos.add(task);
             
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-                   
+            //Dormimos el hilo por un tiempo para crear el siguiente proceso en la lista
+            try{sleep(500);}
+            catch (InterruptedException ex) { Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);}
             
             System.out.println("Hilo corriendo");
+            
         }while(!terminado);
     }
     private void cargarArchivo(){
@@ -118,12 +134,6 @@ public class Generador extends Thread{
                 fila[num_token] = token;//Agregamos el ultimo token ( Como no hay espacio tiene que ser el ultimo)
 
                 arreglo.add(fila);
-
-                //System.out.println(" " + fila[0] + " " + fila[1] + " " + fila[2] + " " + fila[3] + " " + fila[4]);
-                //String[] row = {fila[0], fila[1], "En espera...", "0 seg", ""+fila[2]+" seg", ""+fila[3]+" "+fila[4]};
-                //tablaModelo.addRow(row);
-                //Proceso task = new Proceso(fila[0],tabla,tabla.getRowCount()-1, Integer.parseInt(fila[2]));
-                //procesos.add(task);
 
                 linea = buffer.readLine();
             }                
