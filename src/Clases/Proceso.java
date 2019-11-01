@@ -74,12 +74,19 @@ public class Proceso extends Thread{
     public void run() {
         estado = "Ejecutandose";
         tablaProcesos.setValueAt(estado,fila,2);
-        for(int i = 0; i<coordenadas.size(); i++)
+        for(int i = 0; i<memCoordenadas.size(); i++)
         {
-            int[] c = coordenadas.get(i);
-            matriz[c[0]][c[1]] = pid;
+            int[] c = memCoordenadas.get(i);
+            memMatriz[c[0]][c[1]] = pid;
             tablaMemoria.setValueAt(""+pid+"",c[0],c[1]);
         }
+        for(int i = 0; i<disCoordenadas.size(); i++)
+        {
+            int[] c = disCoordenadas.get(i);
+            disMatriz[c[0]][c[1]] = pid;
+            tablaDisco.setValueAt(""+pid+"",c[0],c[1]);
+        }
+        
         
         while(restante>0)
         {
