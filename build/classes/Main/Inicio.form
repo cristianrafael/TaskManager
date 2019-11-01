@@ -25,63 +25,95 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="103" groupAlignment="1" attributes="0">
                   <Group type="102" attributes="0">
                       <Component id="Creditos" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="231" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="143" max="-2" attributes="0"/>
                       <Component id="jButton2" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="196" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="149" max="-2" attributes="0"/>
                       <Component id="jButton3" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="jScrollPane1" alignment="1" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" min="-2" pref="587" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane2" min="-2" pref="216" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jScrollPane3" pref="0" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="memTotal" min="-2" max="-2" attributes="0"/>
-                          <Component id="memDisponible" min="-2" max="-2" attributes="0"/>
-                          <Component id="memUsada" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
+                      <Component id="labelRAM" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="187" max="32767" attributes="0"/>
+                      <Component id="labelRAM1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="137" max="-2" attributes="0"/>
                   </Group>
               </Group>
+          </Group>
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="memDisponible" min="-2" max="-2" attributes="0"/>
+                  <Component id="memUsada" min="-2" max="-2" attributes="0"/>
+                  <Component id="memTotal" alignment="0" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" pref="147" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="disDisponible" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="disUsado" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="disTotal" alignment="0" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" pref="104" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="1" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
               <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                      <Component id="memTotal" min="-2" pref="16" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
+                      <Component id="memUsada" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="memDisponible" min="-2" max="-2" attributes="0"/>
+                  </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="memTotal" min="-2" pref="16" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="memUsada" min="-2" max="-2" attributes="0"/>
+                      <Component id="disTotal" min="-2" pref="16" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
-                      <Component id="memDisponible" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" attributes="0">
-                      <EmptySpace min="-2" pref="52" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jButton3" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="Creditos" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
+                      <Component id="disUsado" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="disDisponible" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="jScrollPane1" min="-2" pref="380" max="-2" attributes="0"/>
-                  <Component id="jScrollPane2" min="-2" pref="380" max="-2" attributes="0"/>
+                  <Group type="102" alignment="1" attributes="0">
+                      <Component id="labelRAM1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jScrollPane3" min="-2" pref="380" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="1" attributes="0">
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="labelRAM" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="Creditos" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="jButton3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="jScrollPane1" min="-2" pref="380" max="-2" attributes="0"/>
+                          <Component id="jScrollPane2" min="-2" pref="380" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
               </Group>
-              <EmptySpace pref="80" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -220,6 +252,109 @@
     <Component class="javax.swing.JLabel" name="memDisponible">
       <Properties>
         <Property name="text" type="java.lang.String" value="Memoria disponible:"/>
+      </Properties>
+    </Component>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane3">
+      <AuxValues>
+        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+      </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JTable" name="tablaDisco">
+          <Properties>
+            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
+              <Table columnCount="8" rowCount="4">
+                <Column editable="true" title="Title 1" type="java.lang.Object"/>
+                <Column editable="true" title="Title 2" type="java.lang.Object"/>
+                <Column editable="true" title="Title 3" type="java.lang.Object"/>
+                <Column editable="true" title="Title 4" type="java.lang.Object"/>
+                <Column editable="true" title="Title 5" type="java.lang.Object"/>
+                <Column editable="true" title="Ttile 6" type="java.lang.Object"/>
+                <Column editable="true" title="Ttile 7" type="java.lang.Object"/>
+                <Column editable="true" title="Ttile 8" type="java.lang.Object"/>
+              </Table>
+            </Property>
+            <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
+              <TableColumnModel selectionModel="0">
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+              </TableColumnModel>
+            </Property>
+            <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
+              <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
+            </Property>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JLabel" name="labelRAM">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Tahoma" size="18" style="1"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Memoria RAM"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="labelRAM1">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Tahoma" size="18" style="1"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Disco Duro"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="disUsado">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Espacio utilizado:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="disTotal">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Espacio total: 16,000 KB "/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="disDisponible">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Espacio disponible:"/>
       </Properties>
     </Component>
   </SubComponents>

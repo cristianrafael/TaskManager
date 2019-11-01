@@ -19,6 +19,7 @@ public class Proceso extends Thread{
     
     javax.swing.JTable tablaProcesos; //Tabla que muestra el estado del proceso
     javax.swing.JTable tablaMemoria; //Tabla que muestra la memoria que consume el proceso
+    javax.swing.JTable tablaDisco; //Tabla que muestra la memoria que consume el proceso
     
     int fila;  //Fila asignada para la tabla de los procesos (Saber cual es el renglon(o row) que tenemos que editar
     int tiempo; //Define la cantidad de tiempo que tardara el proceso en terminar
@@ -29,32 +30,45 @@ public class Proceso extends Thread{
     boolean termino_forzado; //Bandera que indica si el proceso se termino debido a una detencion forzada o manual ( mediante el boton)
     
     int paginas; //Son las paginas/bloques/celdas que consume el proceso
+    int paginasRam; //Son las paginas que si estan en RAM, el resto estan en el disco
+    
     int pid; //Identificador del proceso (OJO!! se puede repetir)
     
-    List<int[]> coordenadas; //Lista de las coordenadas de cada una de las partes que compone el proceso en memoria
-    int[] bloquesDisponibles;
-    int[][] matriz;
-    public Proceso(String nombre_proceso, javax.swing.JTable tablaProcesos, javax.swing.JTable tablaMemoria, int fila, int tiempo, int paginas, int pid, int[] bloquesDisponibles, int[][] matriz){
-        
+    List<int[]> memCoordenadas; //Lista de las coordenadas de cada una de las partes que compone el proceso en memoria
+    List<int[]> disCoordenadas; //Lista de las coordenadas de cada una de las partes que compone el proceso en disco
+    
+    int[] memBloquesDisponibles;
+    int[] disBloquesDisponibles;
+    int[][] memMatriz;
+    int[][] disMatriz;
+    
+    public Proceso(String nombre_proceso, javax.swing.JTable tablaProcesos, javax.swing.JTable tablaMemoria, javax.swing.JTable tablaDisco, int[] memBloquesDisponibles, int[] disBloquesDisponibles, int[][] memMatriz, int[][] disMatriz, int fila, int pid, int tiempo, int paginas, int paginasRam){
+   
        super(nombre_proceso);
        
        this.tablaProcesos = tablaProcesos; 
        this.tablaMemoria = tablaMemoria;
+       this.tablaDisco = tablaDisco;
+       
+       this.memBloquesDisponibles = memBloquesDisponibles;
+       this.disBloquesDisponibles = disBloquesDisponibles;
+       
+       this.memMatriz = memMatriz;
+       this.disMatriz = disMatriz;
        
        this.fila = fila;
-       this.paginas = paginas;
        this.pid = pid;
-              
        this.tiempo = this.restante = tiempo;
-       this.transcurrido = 0;
+       this.paginas = paginas;
+       this.paginasRam = paginasRam;
        
+       this.transcurrido = 0; 
        this.iniciado = false;
        this.termino_forzado = false;
        
-       coordenadas = new ArrayList(); //Arreglo de cadenas para generar procesos aleatorios(proviene del archivo procesos.txt)
-       
-       this.bloquesDisponibles = bloquesDisponibles;
-       this.matriz = matriz;
+       memCoordenadas = new ArrayList(); 
+       disCoordenadas = new ArrayList(); 
+      
     }
     @Override
     public void run() {
@@ -127,12 +141,15 @@ public class Proceso extends Thread{
     }
     
     //Setters
-    public void addCoordenada(int x, int y)
+    public void addCoordenada(int x, int y ,boolean tipo)
     {
         int[] coordenada = new int[2];
         coordenada[0] = x;
         coordenada[1] = y;
-        coordenadas.add(coordenada);
+        if(tipo)
+            memCoordenadas.add(coordenada);
+        else
+            disCoordenadas.add(coordenada);
     }
     public void iniciar()
     {

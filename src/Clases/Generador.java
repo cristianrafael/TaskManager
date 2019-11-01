@@ -22,10 +22,12 @@ import javax.swing.table.DefaultTableModel;
  */
 public class Generador extends Thread{
     
-    javax.swing.JTable tablaProcesos; //La tabla donde se van a mostrar los estados de los procesos (La misma que se crea en Main.java)
-    javax.swing.JTable tablaMemoria; //La tabla donde se van a mostrar la memoria ocupada de los procesos (La misma que se crea en Main.java)
-    DefaultTableModel modeloProcesos; //El modelo de la tabla "tablaProcesos" (se usa para insertar datos)
-    DefaultTableModel modeloMemoria; //El modelo de la tabla "tablaMemoria" (se usa para insertar datos)    
+    javax.swing.JTable tablaProcesos, tablaMemoria, tablaDisco; //Tablas
+    DefaultTableModel modeloProcesos, modeloMemoria, modeloDisco; //Modelos
+    
+    int[][] memMatriz,disMatriz;//Matrices de los marcos de memoria
+    int[] memBloquesDisponibles,disBloquesDisponibles; //Bloques disponibles para almacenar los procesos en ram o disco
+    
     
     List<Proceso> procesos; //Arreglo de los procesos(hilos) que se van creando
     boolean terminado; //Bandera que termina el while del run
@@ -35,16 +37,18 @@ public class Generador extends Thread{
     String[] unidad = {"","","","",""};
     Random rand; //Variable que sirve para generar numeros aleatorios
     
-    int[] bloquesDisponibles;
-    int[][] matriz;
     Colores colores;
-    public Generador(List<Proceso> procesos, javax.swing.JTable tablaProcesos, javax.swing.JTable tablaMemoria, int[] bloquesDisponibles, int[][] matriz)
+    public Generador(List<Proceso> procesos, javax.swing.JTable tablaProcesos, javax.swing.JTable tablaMemoria, javax.swing.JTable tablaDisco, int[] memBloquesDisponibles, int[] disBloquesDisponibles, int[][] memMatriz, int[][] disMatriz)
     {
+        this.procesos = procesos;
         this.tablaProcesos = tablaProcesos;
         this.tablaMemoria = tablaMemoria;
-        this.procesos = procesos;
-        this.bloquesDisponibles = bloquesDisponibles;
-        this.matriz = matriz;
+        this.tablaDisco = tablaDisco;
+        this.memBloquesDisponibles = memBloquesDisponibles;
+        this.disBloquesDisponibles = disBloquesDisponibles;
+        this.memMatriz = memMatriz;
+        this.disMatriz = disMatriz;
+               
         modeloProcesos = new DefaultTableModel(); //Aqui inicializamos el modelo de la tabla, seguido del nombre de sus columnas
         modeloProcesos.addColumn("Nombre");
         modeloProcesos.addColumn("PID");
@@ -60,17 +64,35 @@ public class Generador extends Thread{
         modeloMemoria.addColumn(" ");
         modeloMemoria.addColumn(" ");
         tablaMemoria.setModel(modeloMemoria); //Le asignamos a la tabla, el modelo que acabamos de inicializar
+        
+        modeloDisco = new DefaultTableModel();
+        modeloDisco.addColumn(" ");
+        modeloDisco.addColumn(" ");
+        modeloDisco.addColumn(" ");
+        modeloDisco.addColumn(" ");
+        modeloDisco.addColumn(" ");
+        modeloDisco.addColumn(" ");
+        modeloDisco.addColumn(" ");
+        modeloDisco.addColumn(" ");
+        tablaDisco.setModel(modeloDisco);
+        
+        //Colocamos la instancia de colores a las dos tablas
         colores = new Colores();
         tablaMemoria.setDefaultRenderer(Object.class, colores);
+        tablaDisco.setDefaultRenderer(Object.class, colores);
+        
+        //Seteamos las tablas en blanco
         for(int i = 0; i<20 ; i++)
         {
-            String[] row = {"","","",""};
-            modeloMemoria.addRow(row);
+            String[] memRow = {"","","",""};
+            modeloMemoria.addRow(memRow);
+            
+            String[] disRow = {"","","","","","","",""};
+            modeloDisco.addRow(disRow);
         }
         
         rand = new Random(); //Se inicializa la variable random
         arreglo = new ArrayList(); //Arreglo de cadenas para generar procesos aleatorios(proviene del archivo procesos.txt)
-        
         cargarArchivo();//Cargamos el archivo
     }
     @Override
@@ -85,9 +107,33 @@ public class Generador extends Thread{
 
             //Agregamos la nueva fila a la tabla de procesos
             modeloProcesos.addRow(row);
-
+            
+            int pags = Integer.parseInt(unidad[3])/100;
+            int pagsRam = rand.nextInt(pags);
+            
+            if((pags - pagsRam) < 3)
+                pagsRam -= 3;
+            
             //Ahora vamos a crear el proceso como tal con la misma informacion de arriba
-            Proceso task = new Proceso(unidad[0],tablaProcesos,tablaMemoria,tablaProcesos.getRowCount()-1, Integer.parseInt(unidad[2]),Integer.parseInt(unidad[3])/100 ,Integer.parseInt(unidad[1]), bloquesDisponibles,matriz);
+            Proceso task = new Proceso(unidad[0], //Nombre del proceso
+                                       tablaProcesos, //Tabla de los estados del proceso
+                                       tablaMemoria, //Tabla de la memoria RAM
+                                       tablaDisco, //Tabla del disco duro
+                                       
+                                       //Arreglo de valores para los bloques que siguen desocupados
+                                       memBloquesDisponibles,
+                                       disBloquesDisponibles,
+                                       
+                                       //Matrices de los valores
+                                       memMatriz,
+                                       disMatriz,
+                    
+                                       tablaProcesos.getRowCount()-1, //Fila correspondiente a la tabla
+                                       Integer.parseInt(unidad[1]), //PID o identificador del proceso
+                                       Integer.parseInt(unidad[2]), //Tiempo que el proceso tiene que permanecer activo para terminarse
+                                       pags, //Paginas o marcos que abarcará el proceso cuando se ejecute
+                                       pagsRam
+                                    );
 
             //Agregamos el proceso creado a la lista de procesos
             procesos.add(task);

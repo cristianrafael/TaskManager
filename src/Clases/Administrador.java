@@ -16,46 +16,56 @@ import javax.swing.JOptionPane;
  */
 public class Administrador extends Thread{
     
-    javax.swing.JTable tablaProcesos,tablaMemoria; //La tabla donde se van a mostrar los estados de los procesos (La misma que se crea en Main.java)    
-    List<Proceso> procesos; //Cola de procesos
-    Generador generador; //Generador de procesos en automatico
-    boolean terminado; //Iteracion infinita del hilo hasta que se indique lo contrario  
+    javax.swing.JTable tablaProcesos,tablaMemoria, tablaDisco; //La tablas donde se van a mostrar los estados de los procesos (La misma que se crea en Main.java)   
+    javax.swing.JLabel memDisponible,memUsada, disDisponbile, disUsado; //Las etiquetas que muestran la info de la memoria/disco
     
-    int[] bloquesDisponibles; //Bloques disponibles para almacenar los procesos
-    int[][] matriz;
+    List<Proceso> procesos; //Cola de procesos
+    Generador generador; //Generador de procesos automatico
+    
+    int[][] memMatriz = new int[20][4];//La matriz de posiciones de la memoria ram
+    int[][] disMatriz = new int[20][8]; //La matriz de posiciones del disco duro
+    
+    int[] memBloquesDisponibles = new int[1]; //Bloques disponibles para almacenar los procesos en ram
+    int[] disBloquesDisponibles = new int[1]; //Bloques disponibles para almacenar los procesos en disco
+    
     int paginas; //Variable auxiliar para colocar las paginas necesarias para colocar el proceso que esta esperando
     int procesoActual;
     
-    javax.swing.JLabel memDisponible;
-    javax.swing.JLabel memUsada;
     
-    public Administrador(javax.swing.JTable tablaProcesos,javax.swing.JTable tablaMemoria, javax.swing.JLabel memUsada, javax.swing.JLabel memDisponible)
+    public Administrador(javax.swing.JTable tablaProcesos,javax.swing.JTable tablaMemoria,javax.swing.JTable tablaDisco, javax.swing.JLabel memUsada, javax.swing.JLabel memDisponible,javax.swing.JLabel disUsado, javax.swing.JLabel disDisponible)
     {
-        super("Main"); //Inicializamos el hilo con el nombre que este llevará
+        //Inicializamos el hilo con el nombre que este llevará
+        super("Main");
         
-        this.tablaProcesos = tablaProcesos; //Seteamos las tablas que viene del main.java
-        this.tablaMemoria = tablaMemoria; 
+        //Seteamos las tablas que vienen del main.java
+        this.tablaProcesos = tablaProcesos; 
+        this.tablaMemoria = tablaMemoria;
+        this.tablaDisco = tablaDisco;
+        
+        //Seteamos las etiquetas que vienen del main.java
         this.memDisponible = memDisponible;
         this.memUsada = memUsada;
-        procesos = new ArrayList();//Inicializar la lista de procesos
-        terminado = false;
+        this.disDisponbile = disDisponible;
+        this.disUsado = disUsado;
         
-        //Inicializamos la memoria
-        bloquesDisponibles = new int[1];
-        bloquesDisponibles[0] = 80;
-        procesoActual = 0;
+        //Inicializar la lista de procesos
+        procesos = new ArrayList();
         
-        matriz = new int[20][4];
+        //Inicializamos la memoria y el disco
+        memBloquesDisponibles[0] = 80;
+        disBloquesDisponibles[0] = 160;
         for(int i = 0; i<20; i++)
         {
             //El -1 significa que la posicion esta disponible, cualquier otro valor es porque esta ocupado
-            matriz[i][0] = -1;
-            matriz[i][1] = -1;
-            matriz[i][2] = -1;
-            matriz[i][3] = -1;
+            memMatriz[i][0] =  memMatriz[i][1] = memMatriz[i][2] = memMatriz[i][3] = -1;
+            disMatriz[i][0] =  disMatriz[i][1] = disMatriz[i][2] = disMatriz[i][3] =  disMatriz[i][4] =  disMatriz[i][5] = disMatriz[i][6] = disMatriz[i][7] = -1;
         }
         
-        generador = new Generador(procesos,tablaProcesos, tablaMemoria,bloquesDisponibles,matriz); //Inicializamos el generador de procesos automatizado 3000
+        //Establecemos el proceso actual de la cola
+        procesoActual = 0;
+        
+        //Inicializamos el generador de procesos
+        generador = new Generador(procesos, tablaProcesos, tablaMemoria, tablaDisco, memBloquesDisponibles, disBloquesDisponibles, memMatriz, disMatriz); //Inicializamos el generador de procesos automatizado 3000
     }
     @Override
     public void run(){
@@ -108,7 +118,7 @@ public class Administrador extends Thread{
             }
             
         }
-        while(!terminado);       
+        while(true);       
     }
     public void pausarReanudarProceso(){
         int row = tablaProcesos.getSelectedRow();

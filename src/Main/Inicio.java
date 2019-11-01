@@ -22,7 +22,18 @@ public class Inicio extends javax.swing.JFrame {
         credits = new Creditos();
         credits.setVisible(false);
         setDefaultCloseOperation (javax.swing.JFrame.EXIT_ON_CLOSE);
-        admin = new Administrador(tablaProcesos,tablaMemoria,memUsada,memDisponible);
+        admin = new Administrador(
+                                  //Pasamos las 3 tablas como parametro
+                                  tablaProcesos,
+                                  tablaMemoria,
+                                  tablaDisco,
+                                  
+                                  //Tambien pasamos los 4 labels
+                                  memUsada,
+                                  memDisponible,
+                                  disUsado,
+                                  disDisponible
+        );
         UIManager.put( "nimbusOrange", new Color( 38, 139, 210 ) );
         iniciarHilo();
     }
@@ -49,6 +60,13 @@ public class Inicio extends javax.swing.JFrame {
         memTotal = new javax.swing.JLabel();
         memUsada = new javax.swing.JLabel();
         memDisponible = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tablaDisco = new javax.swing.JTable();
+        labelRAM = new javax.swing.JLabel();
+        labelRAM1 = new javax.swing.JLabel();
+        disUsado = new javax.swing.JLabel();
+        disTotal = new javax.swing.JLabel();
+        disDisponible = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -105,56 +123,107 @@ public class Inicio extends javax.swing.JFrame {
 
         memDisponible.setText("Memoria disponible:");
 
+        tablaDisco.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4", "Title 5", "Ttile 6", "Ttile 7", "Ttile 8"
+            }
+        ));
+        jScrollPane3.setViewportView(tablaDisco);
+
+        labelRAM.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        labelRAM.setText("Memoria RAM");
+
+        labelRAM1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        labelRAM1.setText("Disco Duro");
+
+        disUsado.setText("Espacio utilizado:");
+
+        disTotal.setText("Espacio total: 16,000 KB ");
+
+        disDisponible.setText("Espacio disponible:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(Creditos)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 231, Short.MAX_VALUE)
+                        .addGap(143, 143, 143)
                         .addComponent(jButton2)
-                        .addGap(196, 196, 196)
-                        .addComponent(jButton3)
-                        .addGap(20, 20, 20))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(149, 149, 149)
+                        .addComponent(jButton3))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 587, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(memTotal)
-                            .addComponent(memDisponible)
-                            .addComponent(memUsada))
-                        .addGap(48, 48, 48))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(40, 40, 40)
+                        .addComponent(labelRAM)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 187, Short.MAX_VALUE)
+                        .addComponent(labelRAM1)
+                        .addGap(137, 137, 137))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(memDisponible)
+                    .addComponent(memUsada)
+                    .addComponent(memTotal))
+                .addGap(147, 147, 147)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(disDisponible)
+                    .addComponent(disUsado)
+                    .addComponent(disTotal))
+                .addGap(104, 104, 104))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(5, 5, 5)
+                        .addComponent(memTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(2, 2, 2)
+                        .addComponent(memUsada)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(memDisponible))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(memTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(memUsada)
+                        .addComponent(disTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(2, 2, 2)
-                        .addComponent(memDisponible)
-                        .addGap(7, 7, 7))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(52, 52, 52)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton3)
-                            .addComponent(jButton2)
-                            .addComponent(Creditos))
-                        .addGap(41, 41, 41)))
+                        .addComponent(disUsado)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(disDisponible)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(80, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(labelRAM1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(labelRAM)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(Creditos)
+                                .addComponent(jButton2))
+                            .addComponent(jButton3))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -210,13 +279,20 @@ public class Inicio extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Creditos;
+    private javax.swing.JLabel disDisponible;
+    private javax.swing.JLabel disTotal;
+    private javax.swing.JLabel disUsado;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JLabel labelRAM;
+    private javax.swing.JLabel labelRAM1;
     private javax.swing.JLabel memDisponible;
     private javax.swing.JLabel memTotal;
     private javax.swing.JLabel memUsada;
+    private javax.swing.JTable tablaDisco;
     private javax.swing.JTable tablaMemoria;
     private javax.swing.JTable tablaProcesos;
     // End of variables declaration//GEN-END:variables
