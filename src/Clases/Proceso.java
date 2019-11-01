@@ -74,6 +74,7 @@ public class Proceso extends Thread{
     public void run() {
         estado = "Ejecutandose";
         tablaProcesos.setValueAt(estado,fila,2);
+        
         for(int i = 0; i<memCoordenadas.size(); i++)
         {
             int[] c = memCoordenadas.get(i);
@@ -111,17 +112,29 @@ public class Proceso extends Thread{
             tablaProcesos.setValueAt("" + restante + " seg",fila,4);
             
             System.out.println("Paginas ->"+ paginas);
+            System.out.println("Paginas en Ram ->"+ paginasRam);
+            System.out.println("Paginas en Disco ->"+ (paginas-paginasRam));
+            System.out.println("Coordenadas en ram ->"+ memCoordenadas.size());
+            System.out.println("Coordenadas en disco ->"+ disCoordenadas.size());
         }
         estado = "Terminado";
         tablaProcesos.setValueAt(estado,fila,2);
         
-        for(int i = 0; i<coordenadas.size(); i++)
+        
+        for(int i = 0; i<memCoordenadas.size(); i++)
         {
-            int[] c = coordenadas.get(i);
-            matriz[c[0]][c[1]] = -1;
+            int[] c = memCoordenadas.get(i);
+            memMatriz[c[0]][c[1]] = -1;
             tablaMemoria.setValueAt("",c[0],c[1]);
         }
-        bloquesDisponibles[0] += paginas;
+        for(int i = 0; i<disCoordenadas.size() ; i++)
+        {
+            int[] c = disCoordenadas.get(i);
+            disMatriz[c[0]][c[1]] = -1;
+            tablaDisco.setValueAt("", c[0],c[1]);
+        }
+        memBloquesDisponibles[0] += paginasRam;
+        disBloquesDisponibles[0] += (paginas - paginasRam);
     }
     //Getters
     public int getFila(){
@@ -129,6 +142,9 @@ public class Proceso extends Thread{
     }
     public int getPaginas(){
         return paginas;
+    }
+    public int getPaginasRam(){
+        return paginasRam;
     }
     public boolean getTerminoForzado(){
         return termino_forzado;

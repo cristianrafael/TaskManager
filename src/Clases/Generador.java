@@ -109,10 +109,25 @@ public class Generador extends Thread{
             modeloProcesos.addRow(row);
             
             int pags = Integer.parseInt(unidad[3])/100;
-            int pagsRam = rand.nextInt(pags);
             
-            if((pags - pagsRam) < 3)
-                pagsRam -= 3;
+            int pagsRam = pags;
+            switch(pags)
+            {
+                case 1: pagsRam = 1; break;
+                case 2: pagsRam = 1; break;
+                case 3: pagsRam = 1; break;
+                case 4: pagsRam = 2; break;
+                case 5: pagsRam = 2; break;
+                case 6: pagsRam = 2; break;
+                case 7: pagsRam = 2; break;
+                case 8: pagsRam = 2; break;
+                case 9: pagsRam = 2; break;
+                case 10:pagsRam = 2; break;
+            }
+            
+            
+            
+            
             
             //Ahora vamos a crear el proceso como tal con la misma informacion de arriba
             Proceso task = new Proceso(unidad[0], //Nombre del proceso
@@ -139,7 +154,7 @@ public class Generador extends Thread{
             procesos.add(task);
             
             //Dormimos el hilo por un tiempo para crear el siguiente proceso en la lista
-            try{sleep(500);}
+            try{sleep(200);}
             catch (InterruptedException ex) { Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);}
             
             System.out.println("Hilo corriendo");

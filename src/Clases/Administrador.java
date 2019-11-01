@@ -17,7 +17,7 @@ import javax.swing.JOptionPane;
 public class Administrador extends Thread{
     
     javax.swing.JTable tablaProcesos,tablaMemoria, tablaDisco; //La tablas donde se van a mostrar los estados de los procesos (La misma que se crea en Main.java)   
-    javax.swing.JLabel memDisponible,memUsada, disDisponbile, disUsado; //Las etiquetas que muestran la info de la memoria/disco
+    javax.swing.JLabel memDisponible,memUsada, disDisponible, disUsado; //Las etiquetas que muestran la info de la memoria/disco
     
     List<Proceso> procesos; //Cola de procesos
     Generador generador; //Generador de procesos automatico
@@ -28,7 +28,7 @@ public class Administrador extends Thread{
     int[] memBloquesDisponibles = new int[1]; //Bloques disponibles para almacenar los procesos en ram
     int[] disBloquesDisponibles = new int[1]; //Bloques disponibles para almacenar los procesos en disco
     
-    int paginas; //Variable auxiliar para colocar las paginas necesarias para colocar el proceso que esta esperando
+    int paginas,paginasRam; //Variable auxiliar para colocar las paginas necesarias para colocar el proceso que esta esperando
     int procesoActual;
     
     
@@ -45,7 +45,7 @@ public class Administrador extends Thread{
         //Seteamos las etiquetas que vienen del main.java
         this.memDisponible = memDisponible;
         this.memUsada = memUsada;
-        this.disDisponbile = disDisponible;
+        this.disDisponible = disDisponible;
         this.disUsado = disUsado;
         
         //Inicializar la lista de procesos
@@ -77,8 +77,8 @@ public class Administrador extends Thread{
             if(procesos.size() > procesoActual)
             {
                 paginas = procesos.get(procesoActual).getPaginas();
-                
-                while(bloquesDisponibles[0] < paginas)
+                paginasRam = procesos.get(procesoActual).getPaginasRam();
+                while(memBloquesDisponibles[0] < paginasRam && disBloquesDisponibles[0] < (paginas - paginasRam))
                 {
                     try
                     {
@@ -88,31 +88,56 @@ public class Administrador extends Thread{
                     }
                 }
                 
-                bloquesDisponibles[0] -= paginas;
-                memUsada.setText("Memoria usada: " + ((80 - bloquesDisponibles[0])*100) + " KB");
-                memDisponible.setText("Memoria disponible : " + (bloquesDisponibles[0]*100)+ " KB");
+                memBloquesDisponibles[0] -= paginasRam;
+                disBloquesDisponibles[0] -= (paginas - paginasRam);
+                
+                memUsada.setText("Memoria usada: " + ((80 - memBloquesDisponibles[0])*100) + " KB");
+                memDisponible.setText("Memoria disponible : " + (memBloquesDisponibles[0]*100)+ " KB");
+                
+                disUsado.setText("Memoria usada: " + ((160 - disBloquesDisponibles[0])*100) + " KB");
+                disDisponible.setText("Memoria disponible : " + (disBloquesDisponibles[0]*100)+ " KB");
+                
+                paginas -= paginasRam;
+                
                 for(int i = 0; i<20; i++)
                 {
                     for(int j = 0; j<4; j++)
                     {
-                        if(matriz[i][j] == -1)
+                        if(paginasRam == 0)
+                            break;
+                        else if(memMatriz[i][j] == -1)
                         {
-                            procesos.get(procesoActual).addCoordenada(i,j);
-                            paginas--;
-                            if(paginas == 0)
-                                break;
+                            procesos.get(procesoActual).addCoordenada(i,j,true);
+                            paginasRam--;
+                            
+                        }
+                    }
+                    if(paginasRam == 0)
+                        break;
+                }
+                for(int i = 0; i<20; i++)
+                {
+                    for(int j = 0; j<8; j++)
+                    {
+                        if(paginas == 0)
+                            break;
+                        else if(disMatriz[i][j] == -1)
+                        {
+                            procesos.get(procesoActual).addCoordenada(i,j,false);
+                            paginas --;
                         }
                     }
                     if(paginas == 0)
                         break;
                 }
+                
                 procesos.get(procesoActual).start();
                 procesoActual++;        
                 
             }
             
             try {
-                sleep(500);
+                sleep(200);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);
             }
