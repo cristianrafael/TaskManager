@@ -24,79 +24,47 @@ public class Generador extends Thread{
     
     javax.swing.JTable tabla; //La tabla donde se van a mostrar los estados de los procesos (La misma que se crea en Main.java)
     DefaultTableModel tablaModelo; //El modelo de la tabla (se usa para insertar datos)
-    List<List> colas; //Arreglo de los procesos(hilos) que se van creando
-    boolean terminado; //Bandera que termina el while del run
+    List<Proceso> procesos; //Arreglo de los procesos(hilos) que se van creando
+    //Colores colores = new Colores();
     
     //Variables para archivos
     List<String[]> arreglo;
-    String[] unidad = {"","","","",""};
+    String[] unidad = {"","","","","",""};
     Random rand; //Variable que sirve para generar numeros aleatorios
-    
-    int conmutador = 0;
-    String tipo_cola;
-    public Generador(List<List> colas, javax.swing.JTable tabla)
+    public Generador(List<Proceso> procesos, javax.swing.JTable tabla)
     {
-        this.colas = colas;
         this.tabla = tabla;
+        this.procesos = procesos;
         
         tablaModelo = new DefaultTableModel(); //Aqui inicializamos el modelo de la tabla, seguido del nombre de sus columnas
         tablaModelo.addColumn("Nombre");
         tablaModelo.addColumn("PID");
         tablaModelo.addColumn("Estado");
-        tablaModelo.addColumn("Tipo"); 
-        tablaModelo.addColumn("Tiempo transcurrido");
-        tablaModelo.addColumn("Tiempo restante");
+        tablaModelo.addColumn("Rafagas Realizadas (CPU)");
+        tablaModelo.addColumn("Rafagas Restantes (CPU)");
         tablaModelo.addColumn("Memoria");
         tabla.setModel(tablaModelo); //Le asignamos a la tabla, el modelo que acabamos de inicializar.
-        
         rand = new Random(); //Se inicializa la variable random
-        
         arreglo = new ArrayList(); //Arreglo de cadenas para generar procesos aleatorios(proviene del archivo procesos.txt)
-        tipo_cola = "Productor";
         cargarArchivo();//Cargamos el archivo
+        //tabla.setDefaultRenderer (Object.class, colores);
     }
     @Override
     public void run()
     {
-        unidad = arreglo.get(rand.nextInt(arreglo.size())); 
-        String[] row = {unidad[0],unidad[1],"En espera...",tipo_cola,"0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
-        tablaModelo.addRow(row);
-        Proceso task = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]));
-        colas.get(conmutador).add(task);
-        task.iniciar();
         do{
+            unidad = arreglo.get(rand.nextInt(arreglo.size()));
+            String[] row2 = {unidad[0],unidad[1],"En espera...","0",""+ unidad[2], ""+ unidad[3] + " " + unidad[4]};
+            tablaModelo.addRow(row2);
+            Proceso task2 = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]));
+            procesos.add(task2);
             try {
                 sleep(1000);
-                
-                conmutador = rand.nextInt(2);
-                if(conmutador == 1)
-                {
-                    conmutador = 0;
-                    tipo_cola = "Productor";
-                }
-                else
-                {
-                    conmutador = 1;
-                    tipo_cola = "Consumidor";
-                }
-                                
-                unidad = arreglo.get(rand.nextInt(arreglo.size()));
-                
-                String[] row2 = {unidad[0],unidad[1],"En espera...",tipo_cola,"0 seg",""+ unidad[2] +" seg", ""+ unidad[3] + " " + unidad[4]};
-                tablaModelo.addRow(row2);
-                Proceso task2 = new Proceso(unidad[0],tabla,tabla.getRowCount()-1, Integer.parseInt(unidad[2]));
-                
-                
-                colas.get(conmutador).add(task2);
-            
             } catch (InterruptedException ex) {
                 Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
-                   
-            
             System.out.println("Hilo corriendo");
-        }while(!terminado);
+        }while(true);
     }
     private void cargarArchivo(){
         

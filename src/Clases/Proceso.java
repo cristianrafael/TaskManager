@@ -12,11 +12,12 @@ package Clases;
  */
 public class Proceso extends Thread{
     
-    private javax.swing.JTable tabla;
-    private int fila,tiempo,transcurrido,restante;
-    private String estado = "Creado"; //Los estados que puede tener son: Creado, Ejecutandose, Pausado , Terminado, Esperando turno
-    private boolean turno,iniciado;
-    private boolean termino_forzado;
+    javax.swing.JTable tabla;
+    int fila,tiempo,transcurrido,restante,peso;
+    String estado = "Creado"; //Los estados que puede tener son: Creado, Ejecutandose, Pausado , Terminado, Esperando turno
+    boolean turno,iniciado;
+    boolean termino_forzado;
+    
     public Proceso(String nombre_proceso, javax.swing.JTable tabla, int fila,int tiempo){
        super(nombre_proceso);
        this.tabla = tabla;
@@ -34,7 +35,7 @@ public class Proceso extends Thread{
         while(restante>0)
         {
             try {
-                sleep(1000);
+                sleep(500);
                 
                 synchronized (this)
                 {
@@ -50,8 +51,8 @@ public class Proceso extends Thread{
             
             transcurrido++;
             restante = tiempo - transcurrido;
-            tabla.setValueAt("" + transcurrido +" seg",fila,4);
-            tabla.setValueAt("" + restante + " seg",fila,5);
+            tabla.setValueAt("" + transcurrido,fila,3);
+            tabla.setValueAt("" + restante,fila,4);
             
             System.out.println("Hilo corriendo");
         }
@@ -60,6 +61,9 @@ public class Proceso extends Thread{
     }
     public int getFila(){
         return fila;
+    }
+    public int getTiempo(){
+        return tiempo;
     }
     public boolean terminado(){
         if(!estado.equals("Terminado"))

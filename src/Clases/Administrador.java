@@ -6,6 +6,8 @@ package Clases;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -15,158 +17,71 @@ import javax.swing.JOptionPane;
 public class Administrador extends Thread{
     
     javax.swing.JTable tabla; //La tabla donde se van a mostrar los estados de los procesos (La misma que se crea en Main.java)
-    List<Proceso> procesos; //Cola 1 cuantos 4
-    
+    List<Proceso> procesos;
     Generador generador; //Generador de procesos en automatico
-    
-    boolean terminado; //Iteracion infinita hasta que se indique lo contrario
-    
-    boolean produciendo;
-    
-    int cola_contador;
-    
-    int consumidor_actual, productor_actual;
-    
-    int consumidores_restantes;
-    int productores_restantes;
-    
+    int ultimo_proceso,proceso_actual;    
     public Administrador(javax.swing.JTable tabla)
     {
         super("Main"); //Inicializamos el hilo con el nombre que este llevará
-     
         this.tabla = tabla; //Seteamos la tabla que viene del main.java
-        procesos = new ArrayList();
-        
-        
-        generador = new Generador(colas,tabla); //Inicializamos el generador de procesos automatizado 3000
-        terminado = false;
-        produciendo = true;
-        consumidor_actual = productor_actual = cola_contador = 0;
-        productores_restantes = 8;
-        consumidores_restantes = 5;
-        progressBar.setValue(0);
+        procesos = new ArrayList();   
+        generador = new Generador(procesos,tabla); //Inicializamos el generador de procesos automatizado 3000
+        ultimo_proceso = 0;
+        proceso_actual = 0;
     }
     @Override
     public void run(){
         generador.start();
         do
         {   
-            System.out.print("Estado -> ");
-            if(produciendo)
+            System.out.print("Corriendo Hilo principal");
+            if(ultimo_proceso < procesos.size())
             {
-                System.out.println("Produciendo");
-                estado_barra.setText("Produciendo..");
-                if(progressBar.getValue()< 100 && productor_actual < productores.size())
-                {
-                    
-                    if(productores.get(productor_actual).terminado())
+               if(procesos.get(proceso_actual).terminado())
+               {
+                    if(ultimo_proceso == proceso_actual)
                     {
-                        if(!productores.get(productor_actual).getTerminoForzado())
+                       if(ultimo_proceso < procesos.size() -1)
+                           ultimo_proceso++;
+                    }
+                    else
+                    {
+                        int numero = procesos.size();
+                        proceso_actual++;
+                        for(int i = ultimo_proceso; i< numero; i++)
                         {
-                            productores_restantes--;
-                            progressBar.setValue(progressBar.getValue() + 10);
-                            elementos.setText("Elementos : " + progressBar.getValue() / 10);
-                            if(productores_restantes == 0)
-                            {
-                                produciendo = false;
-                                if(consumidores_restantes == 0)
-                                    consumidores_restantes = 5;
-                            }
-                        }                            
-                        productor_actual++;
+                            if((!procesos.get(i).terminado()) && (procesos.get(i).getTiempo() < procesos.get(proceso_actual).getTiempo()))
+                                proceso_actual = i;
+                        }
                     }
-                    else if(!productores.get(productor_actual).iniciado())
-                    {
-                        System.out.println("Produciendo dentro");
-                        productores.get(productor_actual).iniciar();
-                        System.out.println("Produciendo fuera");
-                    }
-                }
-                else
-                    produciendo = false;
+               }
+               else if(!procesos.get(proceso_actual).iniciado())
+               {
+                   procesos.get(proceso_actual).iniciar();
+               }
+                   
+                             
             }
-            else
-            {
-                System.out.println("Consumiendo");
-                estado_barra.setText("Consumiendo..");
-                if(progressBar.getValue()> 0 && consumidor_actual < productores.size())
-                {
-                    if(!consumidores.get(consumidor_actual).iniciado())
-                    {
-                        System.out.println("Consumiendo dentro");
-                        consumidores.get(consumidor_actual).iniciar();
-                        System.out.println("Consumidores fuera");
-                    }
-                    else if(consumidores.get(consumidor_actual).terminado())
-                    {
-                        if(!consumidores.get(consumidor_actual).getTerminoForzado())
-                        {
-                            consumidores_restantes--;
-                            progressBar.setValue(progressBar.getValue() - 10);
-                            elementos.setText("Elementos : " + progressBar.getValue() / 10);
-                            if(consumidores_restantes == 0)
-                            {
-                                produciendo = true;
-                                if(productores_restantes == 0)
-                                    productores_restantes = 8;
-                            }
-                        }                        
-                        consumidor_actual++;
-                    }                      
-                }
-                else
-                    produciendo = true;
+            try {
+                sleep(500);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);
             }
+           
         }
-        while(!terminado);       
+        while(true);       
     }
     public void pausarReanudarProceso(){
         int row = tabla.getSelectedRow();
         if(row != -1)
-        {
-            boolean encontrado = false;
-            for(int i = 0 ; i< productores.size(); i++)
-            {
-                productores.get(row).pausar_reanudar();
-                encontrado = true;
-                break;
-            }
-            if(!encontrado)
-            for(int i = 0 ; i< consumidores.size(); i++)
-            {
-                consumidores.get(row).pausar_reanudar();
-                break;
-            }    
-            
-        }
-        
+            procesos.get(row).pausar_reanudar();
         else
             JOptionPane.showMessageDialog(null, "Primero debe seleccionar un proceso");
     }
     public void detenerProceso(){
         int row = tabla.getSelectedRow();
         if(row != -1)
-        {
-            boolean encontrado = false;
-            for(int i = 0 ; i< productores.size(); i++)
-            {
-                if(productores.get(i).getFila() == row)
-                {
-                    productores.get(i).detener();
-                    encontrado = true;
-                    break;
-                }
-            }
-            if(!encontrado)
-            for(int i = 0 ; i< consumidores.size(); i++)
-            {
-                if(consumidores.get(i).getFila() == row)
-                {
-                    consumidores.get(row).detener();
-                    break;
-                }
-            }   
-        }
+            procesos.get(row).detener();
         else
             JOptionPane.showMessageDialog(null, "Primero debe seleccionar un proceso");
     }
