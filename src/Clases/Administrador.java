@@ -15,14 +15,7 @@ import javax.swing.JOptionPane;
 public class Administrador extends Thread{
     
     javax.swing.JTable tabla; //La tabla donde se van a mostrar los estados de los procesos (La misma que se crea en Main.java)
-    javax.swing.JProgressBar progressBar;
-    javax.swing.JLabel estado_barra;
-    javax.swing.JLabel elementos;
-    List<Proceso> consumidores; //Cola 1 cuantos 4
-    List<Proceso> productores; //Cola 2 cuantos 2
-    
-    List<List> colas; //Lista
-    
+    List<Proceso> procesos; //Cola 1 cuantos 4
     
     Generador generador; //Generador de procesos en automatico
     
@@ -37,21 +30,13 @@ public class Administrador extends Thread{
     int consumidores_restantes;
     int productores_restantes;
     
-    public Administrador(javax.swing.JTable tabla , javax.swing.JProgressBar progressBar, javax.swing.JLabel estado_barra, javax.swing.JLabel elementos)
+    public Administrador(javax.swing.JTable tabla)
     {
         super("Main"); //Inicializamos el hilo con el nombre que este llevará
      
         this.tabla = tabla; //Seteamos la tabla que viene del main.java
-        this.progressBar = progressBar;
-        this.estado_barra = estado_barra;
-        this.elementos = elementos;
-        productores = new ArrayList();
-        consumidores = new ArrayList();
+        procesos = new ArrayList();
         
-        colas = new ArrayList();
-        
-        colas.add(productores);
-        colas.add(consumidores);
         
         generador = new Generador(colas,tabla); //Inicializamos el generador de procesos automatizado 3000
         terminado = false;
