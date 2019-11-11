@@ -35,8 +35,11 @@ public class Generador extends Thread{
     
     int conmutador = 0;
     String tipo_cola;
-    public Generador(List<Proceso> procesos, javax.swing.JTable tabla,javax.swing.JProgressBar progressBar)
+    
+    
+    public Generador(List<Proceso> procesos, javax.swing.JTable tabla,javax.swing.JProgressBar progressBar, javax.swing.JLabel label)
     {
+        
         this.tabla = tabla;
         this.progressBar = progressBar;
         this.procesos = procesos;
@@ -81,7 +84,7 @@ public class Generador extends Thread{
             
                    
             
-            System.out.println("Hilo corriendo");
+        System.out.println("Hilo corriendo");
         }while(!terminado);
     }
     private void cargarArchivo(){

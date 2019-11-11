@@ -8,6 +8,9 @@ package Main;
 
 import Clases.*;
 import java.awt.Color;
+import java.awt.Image;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 
 public class Inicio extends javax.swing.JFrame {
@@ -19,10 +22,30 @@ public class Inicio extends javax.swing.JFrame {
      */
     public Inicio() {
         initComponents();
+        this.getContentPane().setBackground(Color.white);
+        
+        ImageIcon img = new ImageIcon("src/Images/90234.gif");
+        Icon icono = new ImageIcon(img.getImage().getScaledInstance(imagenCargador.getWidth(),imagenCargador.getHeight(),Image.SCALE_DEFAULT));
+        imagenCargador.setIcon(icono);
+                       
+        ImageIcon img4 = new ImageIcon("src/Images/cajas.png");
+        Icon icono4 = new ImageIcon(img4.getImage().getScaledInstance(imagenCajas.getWidth(),imagenCajas.getHeight(),Image.SCALE_DEFAULT));
+        imagenCajas.setIcon(icono4);
+        
+        
         credits = new Creditos();
         credits.setVisible(false);
         setDefaultCloseOperation (javax.swing.JFrame.EXIT_ON_CLOSE);
-        admin = new Administrador(tabla,progressBar,memoria);
+        admin = new Administrador(pilaConsumidor,
+                                  pilaProductor,
+                                  imagenConsumidorPausado,
+                                  imagenProductorPausado,
+                                  imagenCargador,
+                                  imagenCajas,
+                                  consumidorTam,
+                                  productorTam);
+        
+        
         UIManager.put( "nimbusOrange", new Color( 38, 139, 210 ) );
         iniciarHilo();
     }
@@ -39,43 +62,38 @@ public class Inicio extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tabla = new javax.swing.JTable();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        imagenCargador = new javax.swing.JLabel();
         Creditos = new javax.swing.JButton();
-        progressBar = new javax.swing.JProgressBar();
-        memoria = new javax.swing.JLabel();
+        pilaProductor = new javax.swing.JProgressBar();
+        imagenCajas = new javax.swing.JLabel();
+        imagenProductorPausado = new javax.swing.JLabel();
+        imagenProductor = new javax.swing.JLabel();
+        imagenConsumidorPausado = new javax.swing.JLabel();
+        imagenConsumidor = new javax.swing.JLabel();
+        consumidor = new javax.swing.JLabel();
+        productor = new javax.swing.JLabel();
+        consumidor_productor = new javax.swing.JLabel();
+        pilaConsumidor = new javax.swing.JProgressBar();
+        cargadorVelocidad = new javax.swing.JSlider();
+        jLabel1 = new javax.swing.JLabel();
+        productorTam = new javax.swing.JLabel();
+        consumidorTam = new javax.swing.JLabel();
+        consumidorVelocidad = new javax.swing.JSlider();
+        cajasProductor = new javax.swing.JLabel();
+        cajasProductor1 = new javax.swing.JLabel();
+        productorVelocidad = new javax.swing.JSlider();
+        colaConsumidor = new javax.swing.JSlider();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        colaProductor = new javax.swing.JSlider();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(800, 500));
+        setMinimumSize(new java.awt.Dimension(800, 800));
+        setPreferredSize(new java.awt.Dimension(800, 450));
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        tabla.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Nombre", "PID", "Memoria", "Tiempo transcurrido"
-            }
-        ));
-        jScrollPane1.setViewportView(tabla);
-
-        jButton2.setText("Pausar/Reanudar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-
-        jButton3.setText("Terminar");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
+        imagenCargador.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/90234.gif"))); // NOI18N
+        getContentPane().add(imagenCargador, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 200, 70, 80));
 
         Creditos.setText("Creditos");
         Creditos.addActionListener(new java.awt.event.ActionListener() {
@@ -83,69 +101,159 @@ public class Inicio extends javax.swing.JFrame {
                 CreditosActionPerformed(evt);
             }
         });
+        getContentPane().add(Creditos, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 13, -1, -1));
 
-        progressBar.setForeground(new java.awt.Color(0, 204, 204));
+        pilaProductor.setForeground(new java.awt.Color(0, 204, 204));
+        pilaProductor.setMaximum(10);
+        getContentPane().add(pilaProductor, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 380, 210, 27));
 
-        memoria.setText("Memoria: 0%");
+        imagenCajas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/cajas.png"))); // NOI18N
+        imagenCajas.setText("jLabel3");
+        getContentPane().add(imagenCajas, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 220, 70, 80));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(Creditos)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton3))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 746, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(214, 214, 214)
-                        .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(315, 315, 315)
-                .addComponent(memoria)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3)
-                    .addComponent(Creditos))
-                .addGap(18, 18, 18)
-                .addComponent(memoria)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(64, 64, 64)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 629, Short.MAX_VALUE))
-        );
+        imagenProductorPausado.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/productorPausado.png"))); // NOI18N
+        getContentPane().add(imagenProductorPausado, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 60, -1, -1));
+
+        imagenProductor.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/88671.gif"))); // NOI18N
+        imagenProductor.setPreferredSize(new java.awt.Dimension(300, 210));
+        getContentPane().add(imagenProductor, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 60, -1, -1));
+
+        imagenConsumidorPausado.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/sincajas.png"))); // NOI18N
+        getContentPane().add(imagenConsumidorPausado, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 150, -1, -1));
+
+        imagenConsumidor.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/transporte.gif"))); // NOI18N
+        getContentPane().add(imagenConsumidor, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 150, -1, -1));
+
+        consumidor.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        consumidor.setText("CONSUMIDOR");
+        getContentPane().add(consumidor, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 310, -1, -1));
+
+        productor.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        productor.setText("PRODUCTOR");
+        getContentPane().add(productor, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 310, -1, -1));
+
+        consumidor_productor.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        consumidor_productor.setText("PRODUCTOR-CONSUMIDOR");
+        getContentPane().add(consumidor_productor, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 20, -1, -1));
+
+        pilaConsumidor.setForeground(new java.awt.Color(0, 204, 204));
+        pilaConsumidor.setMaximum(10);
+        getContentPane().add(pilaConsumidor, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 380, 200, 27));
+
+        cargadorVelocidad.setMajorTickSpacing(1);
+        cargadorVelocidad.setMaximum(10);
+        cargadorVelocidad.setPaintLabels(true);
+        cargadorVelocidad.setPaintTicks(true);
+        cargadorVelocidad.setValue(1);
+        cargadorVelocidad.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                cargadorVelocidadStateChanged(evt);
+            }
+        });
+        getContentPane().add(cargadorVelocidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 400, -1, -1));
+
+        jLabel1.setText("Velocidad del cargador");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 380, -1, -1));
+
+        productorTam.setText("Elementos: 0/0");
+        getContentPane().add(productorTam, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 360, -1, -1));
+
+        consumidorTam.setText("Elementos : 0/0");
+        getContentPane().add(consumidorTam, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 360, -1, -1));
+
+        consumidorVelocidad.setMajorTickSpacing(1);
+        consumidorVelocidad.setMaximum(5);
+        consumidorVelocidad.setMinimum(1);
+        consumidorVelocidad.setPaintLabels(true);
+        consumidorVelocidad.setPaintTicks(true);
+        consumidorVelocidad.setValue(1);
+        consumidorVelocidad.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                consumidorVelocidadStateChanged(evt);
+            }
+        });
+        getContentPane().add(consumidorVelocidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 490, -1, -1));
+
+        cajasProductor.setText("Cajas por segundo");
+        getContentPane().add(cajasProductor, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 460, -1, -1));
+
+        cajasProductor1.setText("Cajas por segundo");
+        getContentPane().add(cajasProductor1, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 460, -1, -1));
+
+        productorVelocidad.setMajorTickSpacing(1);
+        productorVelocidad.setMaximum(5);
+        productorVelocidad.setMinimum(1);
+        productorVelocidad.setPaintLabels(true);
+        productorVelocidad.setPaintTicks(true);
+        productorVelocidad.setValue(1);
+        productorVelocidad.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                productorVelocidadStateChanged(evt);
+            }
+        });
+        getContentPane().add(productorVelocidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 490, -1, -1));
+
+        colaConsumidor.setMajorTickSpacing(10);
+        colaConsumidor.setMinimum(10);
+        colaConsumidor.setPaintLabels(true);
+        colaConsumidor.setPaintTicks(true);
+        colaConsumidor.setValue(10);
+        colaConsumidor.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                colaConsumidorStateChanged(evt);
+            }
+        });
+        getContentPane().add(colaConsumidor, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 630, -1, -1));
+
+        jLabel2.setText("Tamaño de la cola");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 590, -1, -1));
+
+        jLabel3.setText("Tamaño de la cola");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 590, -1, -1));
+
+        colaProductor.setMajorTickSpacing(10);
+        colaProductor.setMinimum(10);
+        colaProductor.setPaintLabels(true);
+        colaProductor.setPaintTicks(true);
+        colaProductor.setValue(10);
+        colaProductor.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                colaProductorStateChanged(evt);
+            }
+        });
+        getContentPane().add(colaProductor, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 630, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        admin.pausarReanudarProceso();
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        admin.detenerProceso();
-    }//GEN-LAST:event_jButton3ActionPerformed
-
     private void CreditosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreditosActionPerformed
         credits.setVisible(true);
     }//GEN-LAST:event_CreditosActionPerformed
+
+    private void cargadorVelocidadStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_cargadorVelocidadStateChanged
+        admin.setVelocidadCargador(cargadorVelocidad.getValue());
+    }//GEN-LAST:event_cargadorVelocidadStateChanged
+
+    private void colaConsumidorStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_colaConsumidorStateChanged
+        if (pilaConsumidor.getValue() > colaConsumidor.getValue())
+            pilaConsumidor.setValue(colaConsumidor.getValue());
+        pilaConsumidor.setMaximum(colaConsumidor.getValue());
+            
+    }//GEN-LAST:event_colaConsumidorStateChanged
+
+    private void colaProductorStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_colaProductorStateChanged
+        if (pilaProductor.getValue() > colaProductor.getValue())
+            pilaProductor.setValue(colaProductor.getValue());
+        pilaProductor.setMaximum(colaProductor.getValue());
+    }//GEN-LAST:event_colaProductorStateChanged
+
+    private void productorVelocidadStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_productorVelocidadStateChanged
+        admin.setVelocidadProductor(productorVelocidad.getValue());
+    }//GEN-LAST:event_productorVelocidadStateChanged
+
+    private void consumidorVelocidadStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_consumidorVelocidadStateChanged
+        admin.setVelocidadConsumidor(consumidorVelocidad.getValue());
+    }//GEN-LAST:event_consumidorVelocidadStateChanged
 
     /**
      * @param args the command line arguments
@@ -185,11 +293,28 @@ public class Inicio extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Creditos;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JLabel memoria;
-    private javax.swing.JProgressBar progressBar;
-    private javax.swing.JTable tabla;
+    private javax.swing.JLabel cajasProductor;
+    private javax.swing.JLabel cajasProductor1;
+    private javax.swing.JSlider cargadorVelocidad;
+    private javax.swing.JSlider colaConsumidor;
+    private javax.swing.JSlider colaProductor;
+    private javax.swing.JLabel consumidor;
+    private javax.swing.JLabel consumidorTam;
+    private javax.swing.JSlider consumidorVelocidad;
+    private javax.swing.JLabel consumidor_productor;
+    private javax.swing.JLabel imagenCajas;
+    private javax.swing.JLabel imagenCargador;
+    private javax.swing.JLabel imagenConsumidor;
+    private javax.swing.JLabel imagenConsumidorPausado;
+    private javax.swing.JLabel imagenProductor;
+    private javax.swing.JLabel imagenProductorPausado;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JProgressBar pilaConsumidor;
+    private javax.swing.JProgressBar pilaProductor;
+    private javax.swing.JLabel productor;
+    private javax.swing.JLabel productorTam;
+    private javax.swing.JSlider productorVelocidad;
     // End of variables declaration//GEN-END:variables
 }
